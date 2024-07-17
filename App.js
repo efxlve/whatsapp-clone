@@ -1,8 +1,10 @@
-import { StyleSheet, Text } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useCallback, useState } from 'react';
 import * as Font from 'expo-font';
+import AppNavigator from './navigation/AppNavigator';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,10 +29,10 @@ export default function App() {
           "thin": require("./assets/fonts/Roboto-Thin.ttf"),
           "thinItalic": require("./assets/fonts/Roboto-ThinItalic.ttf"),
         });
-      } 
+      }
       catch (error) {
         console.log(error);
-      } 
+      }
       finally {
         setAppIsLoaded(true);
       }
@@ -50,14 +52,12 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider 
-      style={styles.container} 
+    <SafeAreaProvider
+      style={styles.container}
       onLayout={onLayout}>
-      <SafeAreaView>
 
-        <Text style={styles.label}>Hi everyone!</Text>
+      <AppNavigator />
 
-      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
@@ -65,9 +65,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#fff'
   },
   label: {
     fontFamily: "regular"
