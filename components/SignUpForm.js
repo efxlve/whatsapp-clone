@@ -1,16 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import Input from '../components/Input';
 import SubmitButton from '../components/SubmitButton';
 import { validateInput } from '../utils/actions/formActions';
-
-const reducer = (state, action) => {
-    const { validationResult } = action;
-    return {
-        ...state,
-        formIsValid: validationResult === undefined
-    }
-}
+import { reducer } from '../utils/reducers/formReducer';
 
 const initialState = {
     inputValidities: {
@@ -25,11 +18,10 @@ const initialState = {
 const SignUpForm = props => {
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-    const inputChangeHandler = (inputId, inputValue) => {
+    const inputChangeHandler = useCallback((inputId, inputValue) => {
         const result = validateInput(inputId, inputValue);
-        dispatchFormState({ validationResult: result })
-    }
-
+        dispatchFormState({ inputId, validationResult: result })
+    }, [dispatchFormState]);
 
     return (
         <>
@@ -40,6 +32,7 @@ const SignUpForm = props => {
                 iconPack={FontAwesome}
                 onInputChanged={inputChangeHandler}
                 autoCapitalize="none"
+                errorText={formState.inputValidities["firstName"]}
             />
 
             <Input
@@ -49,6 +42,7 @@ const SignUpForm = props => {
                 iconPack={FontAwesome}
                 onInputChanged={inputChangeHandler}
                 autoCapitalize="none"
+                errorText={formState.inputValidities["lastName"]}
             />
 
             <Input
@@ -59,6 +53,7 @@ const SignUpForm = props => {
                 onInputChanged={inputChangeHandler}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                errorText={formState.inputValidities["email"]}
             />
 
             <Input
@@ -69,6 +64,7 @@ const SignUpForm = props => {
                 secureTextEntry
                 iconPack={Feather}
                 onInputChanged={inputChangeHandler}
+                errorText={formState.inputValidities["password"]}
             />
 
             <SubmitButton
