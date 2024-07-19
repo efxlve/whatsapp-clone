@@ -2,10 +2,15 @@ import React, { useCallback, useReducer } from 'react';
 import { Feather } from '@expo/vector-icons';
 import Input from '../components/Input';
 import SubmitButton from '../components/SubmitButton';
+
 import { validateInput } from '../utils/actions/formActions';
 import { reducer } from '../utils/reducers/formReducer';
 
 const initialState = {
+    inputValues: {
+        email: "",
+        password: ""
+    },
     inputValidities: {
         email: false,
         password: false
@@ -17,9 +22,9 @@ const SignInForm = props => {
 
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-    const inputChangeHandler = useCallback((inputId, inputValue) => {
+    const inputChangedHandler = useCallback((inputId, inputValue) => {
         const result = validateInput(inputId, inputValue);
-        dispatchFormState({ inputId, validationResult: result })
+        dispatchFormState({ inputId, validationResult: result, inputValue })
     }, [dispatchFormState]);
 
     return (
@@ -31,7 +36,7 @@ const SignInForm = props => {
                 iconPack={Feather}
                 autoCapitalize="none"
                 keyboardType="email-address"
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 errorText={formState.inputValidities["email"]}
             />
 
@@ -42,7 +47,7 @@ const SignInForm = props => {
                 iconPack={Feather}
                 autoCapitalize="none"
                 secureTextEntry
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 errorText={formState.inputValidities["password"]}
             />
 

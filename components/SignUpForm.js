@@ -1,11 +1,22 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import Input from '../components/Input';
 import SubmitButton from '../components/SubmitButton';
+
 import { validateInput } from '../utils/actions/formActions';
 import { reducer } from '../utils/reducers/formReducer';
+import { signUp } from '../utils/actions/authActions';
+import { ActivityIndicator, Alert } from 'react-native';
+import colors from '../constants/colors';
+import { useDispatch, useSelector } from 'react-redux';
 
 const initialState = {
+    inputValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
+    },
     inputValidities: {
         firstName: false,
         lastName: false,
@@ -16,12 +27,41 @@ const initialState = {
 }
 
 const SignUpForm = props => {
+    const dispatch = useDispatch();
+
+    const [error, setError] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-    const inputChangeHandler = useCallback((inputId, inputValue) => {
+    const inputChangedHandler = useCallback((inputId, inputValue) => {
         const result = validateInput(inputId, inputValue);
-        dispatchFormState({ inputId, validationResult: result })
+        dispatchFormState({ inputId, validationResult: result, inputValue })
     }, [dispatchFormState]);
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert("An error occured", error);
+        }
+    }, [error]);
+
+    const authHandler = async () => {
+        try {
+            setIsLoading(true);
+
+            const action = signUp(
+                formState.inputValues.firstName,
+                formState.inputValues.lastName,
+                formState.inputValues.email,
+                formState.inputValues.password,
+            );
+
+            dispatch(action);
+            setError(null);
+        } catch (error) {
+            setError(error.message);
+            setIsLoading(false);
+        }
+    };
 
     return (
         <>
@@ -30,7 +70,7 @@ const SignUpForm = props => {
                 label="First name"
                 icon="user-o"
                 iconPack={FontAwesome}
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 autoCapitalize="none"
                 errorText={formState.inputValidities["firstName"]}
             />
@@ -40,7 +80,7 @@ const SignUpForm = props => {
                 label="Last name"
                 icon="user-o"
                 iconPack={FontAwesome}
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 autoCapitalize="none"
                 errorText={formState.inputValidities["lastName"]}
             />
@@ -50,7 +90,7 @@ const SignUpForm = props => {
                 label="Email"
                 icon="mail"
                 iconPack={Feather}
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 errorText={formState.inputValidities["email"]}
@@ -63,16 +103,20 @@ const SignUpForm = props => {
                 autoCapitalize="none"
                 secureTextEntry
                 iconPack={Feather}
-                onInputChanged={inputChangeHandler}
+                onInputChanged={inputChangedHandler}
                 errorText={formState.inputValidities["password"]}
             />
 
-            <SubmitButton
-                title="Sign up"
-                onPress={() => console.log("Button pressed")}
-                style={{ marginTop: 20 }}
-                disabled={!formState.formIsValid}
-            />
+            {
+                isLoading ?
+                <ActivityIndicator size={'small'} color={colors.primary} style={{ marginTop: 10 }} /> :
+                <SubmitButton
+                    title="Sign up"
+                    onPress={authHandler}
+                    style={{ marginTop: 20 }}
+                    disabled={!formState.formIsValid}
+                />
+            }
         </>
     )
 };
