@@ -9,6 +9,7 @@ import { reducer } from '../utils/reducers/formReducer';
 import { useSelector } from 'react-redux';
 import colors from '../constants/colors';
 import SubmitButton from '../components/SubmitButton';
+import { updateSignedInUserData } from '../utils/actions/authActions';
 
 const SettingsScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +38,18 @@ const SettingsScreen = props => {
         dispatchFormState({ inputId, validationResult: result, inputValue })
     }, [dispatchFormState]);
 
-    const saveHandler = () => {
-
+    const saveHandler = async () => {
+        const updatedValues = formState.inputValues;
+        
+        try {
+            setIsLoading(true);
+            await updateSignedInUserData(userData.userId, updatedValues);
+        } catch (error) {
+            console.log(error);
+        }
+        finally {
+            setIsLoading(false);
+        }
     };
 
     return <PageContainer>
