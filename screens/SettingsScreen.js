@@ -6,12 +6,14 @@ import PageTitle from '../components/PageTitle';
 import Input from '../components/Input';
 import { validateInput } from '../utils/actions/formActions';
 import { reducer } from '../utils/reducers/formReducer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import colors from '../constants/colors';
 import SubmitButton from '../components/SubmitButton';
-import { updateSignedInUserData } from '../utils/actions/authActions';
+import { updateSignedInUserData, userLogout } from '../utils/actions/authActions';
 
 const SettingsScreen = props => {
+    const dispatch = useDispatch();
+
     const [isLoading, setIsLoading] = useState(false);
     const userData = useSelector(state => state.auth.userData);
 
@@ -40,7 +42,7 @@ const SettingsScreen = props => {
 
     const saveHandler = async () => {
         const updatedValues = formState.inputValues;
-        
+
         try {
             setIsLoading(true);
             await updateSignedInUserData(userData.userId, updatedValues);
@@ -109,6 +111,13 @@ const SettingsScreen = props => {
                     disabled={!formState.formIsValid}
                 />
         }
+
+        <SubmitButton
+            title="Logout"
+            onPress={() => dispatch(userLogout())}
+            style={{ marginTop: 20 }}
+            color={colors.red}
+        />
     </PageContainer>;
 };
 

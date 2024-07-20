@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     text: {
-        fontSize: 20,
+        fontSize: 30,
         color: colors.textColor,
         fontFamily: "bold",
         letterSpacing: 0.3
