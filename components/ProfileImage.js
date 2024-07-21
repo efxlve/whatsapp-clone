@@ -1,22 +1,45 @@
-import React from "react";
-import { Image, StyleSheet, View, TouchableOpacity } from 'react-native';
-import { FontAwesome } from "@expo/vector-icons";
+import React, { useState } from  'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
-import colors from "../constants/colors";
-import userImage from "../assets/images/userImage.jpeg";
-import { launchImagePicker } from "../utils/imagePickerHelper";
+import userImage from '../assets/images/userImage.jpeg';
+import colors from '../constants/colors';
+import { launchImagePicker, uploadImageAsync } from '../utils/imagePickerHelper';
+import { updateSignedInUserData } from '../utils/actions/authActions';
 
 const ProfileImage = props => {
-    const pickImage = () => {
-        launchImagePicker();
-    };
+    const source = props.uri ?  { uri: props.uri } : userImage;
+
+    const [image, setImage] = useState(source);
+
+    const userId = props.userId;
+
+    const pickImage = async () => {
+        try {
+            const tempUri = await launchImagePicker();
+
+            if (!tempUri) return;
+
+            const uploadUrl = await uploadImageAsync(tempUri);
+
+            if (!uploadUrl) {
+                throw new Error("Could not upload image");
+            }
+
+            await updateSignedInUserData(userId, { profilePicture: uploadUrl });
+
+            setImage({ uri: uploadUrl });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <TouchableOpacity onPress={pickImage}>
             <Image
                 style={{ ...styles.image, ...{ width: props.size, height: props.size } }}
-                source={userImage}
-            />
+                source={image}/>
 
             <View style={styles.editIconContainer}>
                 <FontAwesome name="pencil" size={15} color="black" />
@@ -39,6 +62,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 8
     }
-});
+})
 
 export default ProfileImage;
