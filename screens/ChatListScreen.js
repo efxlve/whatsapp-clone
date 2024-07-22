@@ -11,7 +11,7 @@ const ChatListScreen = props => {
                     <Item 
                         title='New chat'
                         iconName='create-outline'
-                        onPress={() => {}}
+                        onPress={() => props.navigation.navigate("NewChat")}
                     />
                 </HeaderButtons>
             }

@@ -14,7 +14,7 @@
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
-    "@react-navigation/stack": "^6.4.1",
+    "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^2.2.6",
     "expo": "~51.0.20",
     "expo-image-picker": "~13.1.1",
