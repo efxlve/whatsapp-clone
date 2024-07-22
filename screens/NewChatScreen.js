@@ -8,9 +8,12 @@ import colors from '../constants/colors';
 import commonStyles from '../constants/commonStyles';
 import { searchUsers } from '../utils/actions/userActions';
 import DataItem from '../components/DataItem';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setStoredUsers } from '../store/userSlice';
 
 const NewChatScreen = props => {
+    const dispatch = useDispatch();
+
     const [isLoading, setIsLoading] = useState(false);
     const [users, setUsers] = useState();
     const [noResultsFound, setNoResultsFound] = useState(false);
@@ -50,6 +53,7 @@ const NewChatScreen = props => {
                 setNoResultsFound(true);
             } else {
                 setNoResultsFound(false);
+                dispatch(setStoredUsers({ newUsers: usersResult }));
             }
 
             setIsLoading(false);
