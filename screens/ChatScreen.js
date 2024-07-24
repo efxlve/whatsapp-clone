@@ -9,17 +9,34 @@ import { useSelector } from 'react-redux';
 import Bubble from '../components/Bubble';
 import { createChat, sendTextMessage } from '../utils/actions/chatActions';
 
-
 const ChatScreen = props => {
-    const userData = useSelector(state => state.auth.userData);
-    const storedUsers = useSelector(state => state.users.storedUsers);
-    const storedChats = useSelector(state => state.chats.chatsData);
-    const ChatMessages = useSelector(state => state.messages.messagesData);
-
     const [chatUsers, setChatUsers] = useState([]);
     const [messageText, setMessageText] = useState("");
     const [chatId, setChatId] = useState(props.route?.params?.chatId);
     const [errorBannerText, setErrorBannerText] = useState("");
+
+    const userData = useSelector(state => state.auth.userData);
+    const storedUsers = useSelector(state => state.users.storedUsers);
+    const storedChats = useSelector(state => state.chats.chatsData);
+    const ChatMessages = useSelector(state => {
+        if (!chatId) return [];
+
+        const chatMessagesData = state.messages.messagesData[chatId];
+
+        if (!chatMessagesData) return [];
+
+        const messageList = [];
+        for (const key in chatMessagesData) {
+            const message = chatMessagesData[key];
+            messageList.push({
+                key,
+                ...message
+            });
+        }
+
+        return messageList;
+    });
+    console.log(ChatMessages)
 
     const chatData = (chatId && storedChats[chatId]) || props.route?.params?.newChatData;
 
