@@ -52,6 +52,8 @@ const ChatListScreen = props => {
             data={userChats}
             renderItem={(itemData) => {
                 const chatData = itemData.item;
+                const chatId = chatData.key;
+
                 const otherUserId = chatData.users.find(uid => uid !== userData.userId);
                 const otherUser = storedUsers[otherUserId];
 
@@ -65,6 +67,7 @@ const ChatListScreen = props => {
                     title={title}
                     subTitle={subTitle}
                     image={image}
+                    onPress={() => props.navigation.navigate("ChatScreen", { chatId })}
                 />
             }}
         />
