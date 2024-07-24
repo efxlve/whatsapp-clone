@@ -15,6 +15,11 @@ const Bubble = props => {
             bubbleStyle.alignItems = 'center';
             bubbleStyle.marginTop = 10;
             break;
+        case "error":
+            bubbleStyle.backgroundColor = colors.red;
+            textStyle.color = 'white';
+            bubbleStyle.marginTop = 10;
+            break;
     
         default:
             break;
