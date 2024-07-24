@@ -3,6 +3,19 @@ import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
 import colors from '../constants/colors';
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from 'react-native-popup-menu';
 import uuid from 'react-native-uuid';
+import * as Clipboard from 'expo-clipboard';
+import { Feather, FontAwesome } from '@expo/vector-icons';
+
+const MenuItem = props => {
+    const Icon = props.iconPack ?? Feather;
+
+    return <MenuOption onSelect={props.onSelect}>
+        <View style={styles.menuItemContainer}>
+            <Text style={styles.menuText}>{props.text}</Text>
+            <Icon name={props.icon} size={18} />
+        </View>
+    </MenuOption>
+}
 
 const Bubble = props => {
     const { text, type } = props;
@@ -44,6 +57,14 @@ const Bubble = props => {
             break;
     }
 
+    const copyToClipboard = async text => {
+        try {
+            await Clipboard.setStringAsync(text);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <View style={wrapperStyle}>
             <Container onLongPress={() => menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{ width: '100%' }}>
@@ -52,15 +73,23 @@ const Bubble = props => {
                         {text}
                     </Text>
 
-                <Menu name={id.current} ref={menuRef}>
-                    <MenuTrigger />
+                    <Menu name={id.current} ref={menuRef}>
+                        <MenuTrigger />
 
-                    <MenuOptions>
-                        <MenuOption text='Option 1' />
-                        <MenuOption text='Option 2' />
-                        <MenuOption text='Option 3' />
-                    </MenuOptions>
-                </Menu>
+                        <MenuOptions>
+                            <MenuItem
+                                text='Copy to clipboard'
+                                icon={'copy'}
+                                onSelect={() => copyToClipboard(text)}
+                            />
+                            <MenuItem
+                                text='Star message'
+                                icon={'star-o'}
+                                iconPack={FontAwesome}
+                                onSelect={() => copyToClipboard(text)}
+                            />
+                        </MenuOptions>
+                    </Menu>
 
                 </View>
             </Container>
@@ -84,6 +113,16 @@ const styles = StyleSheet.create({
     text: {
         fontFamily: 'regular',
         letterSpacing: 0.3
+    },
+    menuItemContainer: {
+        flexDirection: 'row',
+        padding: 5
+    },
+    menuText: {
+        flex: 1,
+        fontFamily: 'regular',
+        letterSpacing: 0.3,
+        fontSize: 16
     }
 });
 
