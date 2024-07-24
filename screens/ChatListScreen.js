@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import { useSelector } from 'react-redux';
@@ -8,8 +8,10 @@ const ChatListScreen = props => {
     const selectedUser = props.route?.params?.selectedUserId;
 
     const userData = useSelector(state => state.auth.userData);
-    const userChats = useSelector(state => state.chats.chatsData);
-    console.log(userChats);
+    const userChats = useSelector(state => {
+        const chatsData = state.chats.chatsData;
+        return Object.values(chatsData);
+    });
 
     useEffect(() => {
         props.navigation.setOptions({
@@ -39,11 +41,15 @@ const ChatListScreen = props => {
         props.navigation.navigate("ChatScreen", navigationProps);
     }, [props.route?.params]);
 
-    return <View style={styles.container}>
-        <Text>Chat list screen</Text>
+    return <FlatList 
+        data={userChats}
+        renderItem={(itemData) => {
+            const chatData = itemData.item;            
+            const otherUserId = chatData.users.find(uid => uid !== userData.userId);
 
-        <Button title="Go to chat screen" onPress={ () => props.navigation.navigate("ChatScreen") }></Button>
-    </View>;
+            return <Text>{otherUserId}</Text>
+        }}
+    />;
 };
 
 const styles = StyleSheet.create({
