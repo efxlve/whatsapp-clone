@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MenuProvider } from 'react-native-popup-menu';
 
 LogBox.ignoreLogs(['AsyncStorage has been extracted']);
 // AsyncStorage.clear();
@@ -64,7 +65,9 @@ export default function App() {
         <SafeAreaProvider
           style={styles.container}
           onLayout={onLayout}>
-          <AppNavigator />
+          <MenuProvider>
+            <AppNavigator />
+          </MenuProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </Provider>
