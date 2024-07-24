@@ -7,7 +7,7 @@ import backgroundImage from '../assets/images/BackgroundImage.png';
 import colors from '../constants/colors';
 import { useSelector } from 'react-redux';
 import Bubble from '../components/Bubble';
-import { createChat } from '../utils/actions/chatActions';
+import { createChat, sendTextMessage } from '../utils/actions/chatActions';
 
 
 const ChatScreen = props => {
@@ -44,9 +44,9 @@ const ChatScreen = props => {
                 setChatId(id);
             }
 
-
+            await sendTextMessage(chatId, userData.userId, messageText);
         } catch (error) {
-
+            console.log(error);
         }
 
         setMessageText("");
