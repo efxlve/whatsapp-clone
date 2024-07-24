@@ -8,10 +8,13 @@ const ChatListScreen = props => {
     const selectedUser = props.route?.params?.selectedUserId;
 
     const userData = useSelector(state => state.auth.userData);
+    const storedUsers = useSelector(state => state.users.storedUsers);
     const userChats = useSelector(state => {
         const chatsData = state.chats.chatsData;
         return Object.values(chatsData);
     });
+
+    console.log(storedUsers)
 
     useEffect(() => {
         props.navigation.setOptions({
