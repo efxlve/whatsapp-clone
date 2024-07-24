@@ -8,9 +8,10 @@ import ChatListScreen from "../screens/ChatListScreen";
 import ChatScreen from "../screens/ChatScreen";
 import NewChatScreen from "../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
 import { child, getDatabase, off, onValue, ref } from "firebase/database";
+import { setChatsData } from "../store/chatSlice";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,6 +84,7 @@ const StackNavigator = () => {
 }
 
 const MainNavigator = (props) => {
+    const dispatch = useDispatch();
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
@@ -109,7 +111,17 @@ const MainNavigator = (props) => {
 
                 onValue(chatRef, (chatSnapshot) => {
                     chatsFoundCount++;
-                    console.log(chatSnapshot.val());
+                    const data = chatSnapshot.val();
+
+                    if (data) {
+                        data.key = chatSnapshot.key;
+
+                        chatsData[chatSnapshot.key] = data;
+                    }
+
+                    if (chatsFoundCount >= chatIds.length) {
+                        dispatch(setChatsData({ chatsData }));
+                    }
                 });
             };
 
