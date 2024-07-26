@@ -8,6 +8,17 @@ import { Feather, FontAwesome } from '@expo/vector-icons';
 import { starMessage } from "../utils/actions/chatActions";
 import { useSelector } from "react-redux";
 
+function formatAmPm(dateString) {
+    const date = new Date(dateString);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return hours + ':' + minutes + ' ' + ampm;
+}
+
 const MenuItem = props => {
     const Icon = props.iconPack ?? Feather;
 
@@ -20,7 +31,7 @@ const MenuItem = props => {
 }
 
 const Bubble = props => {
-    const { text, type, messageId, chatId, userId } = props;
+    const { text, type, messageId, chatId, userId, date } = props;
 
     const starredMessages = useSelector(state => state.messages.starredMessages[chatId] ?? {});
 
@@ -33,6 +44,7 @@ const Bubble = props => {
 
     let Container = View;
     let isUserMessage = false;
+    const dateString = formatAmPm(date);
 
     switch (type) {
         case "system":
@@ -82,11 +94,17 @@ const Bubble = props => {
                         {text}
                     </Text>
 
-                {
-                    <View style={styles.timeContainer}>
-                        { isStarred && <FontAwesome name='star' size={14} color={colors.textColor} /> }
-                    </View>
-                }
+                    {
+                        dateString && <View style={styles.timeContainer}>
+                            {isStarred && <FontAwesome
+                                name='star'
+                                size={14}
+                                color={colors.textColor}
+                                style={{ marginRight: 5 }}
+                            />}
+                            <Text style={styles.time}>{dateString}</Text>
+                        </View>
+                    }
 
                     <Menu name={id.current} ref={menuRef}>
                         <MenuTrigger />
@@ -142,6 +160,12 @@ const styles = StyleSheet.create({
     timeContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end'
+    },
+    time: {
+        fontFamily: 'regular',
+        letterSpacing: 0.3,
+        color: colors.grey,
+        fontSize: 12
     }
 });
 
