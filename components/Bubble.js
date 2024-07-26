@@ -23,7 +23,6 @@ const Bubble = props => {
     const { text, type, messageId, chatId, userId } = props;
 
     const starredMessages = useSelector(state => state.messages.starredMessages[chatId] ?? {});
-    console.log(starredMessages);
 
     const bubbleStyle = { ...styles.container };
     const textStyle = { ...styles.text };
@@ -33,6 +32,7 @@ const Bubble = props => {
     const id = useRef(uuid.v4());
 
     let Container = View;
+    let isUserMessage = false;
 
     switch (type) {
         case "system":
@@ -51,11 +51,13 @@ const Bubble = props => {
             bubbleStyle.backgroundColor = '#E7FED6';
             bubbleStyle.maxWidth = '90%';
             Container = TouchableWithoutFeedback;
+            isUserMessage = true;
             break;
         case "theirMessage":
             wrapperStyle.justifyContent = 'flex-start';
             bubbleStyle.maxWidth = '90%';
             Container = TouchableWithoutFeedback;
+            isUserMessage = true;
             break;
 
         default:
@@ -70,6 +72,8 @@ const Bubble = props => {
         }
     }
 
+    const isStarred = isUserMessage && starredMessages[messageId] !== undefined;
+
     return (
         <View style={wrapperStyle}>
             <Container onLongPress={() => menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{ width: '100%' }}>
@@ -77,6 +81,12 @@ const Bubble = props => {
                     <Text style={textStyle}>
                         {text}
                     </Text>
+
+                {
+                    <View style={styles.timeContainer}>
+                        { isStarred && <FontAwesome name='star' size={14} color={colors.textColor} /> }
+                    </View>
+                }
 
                     <Menu name={id.current} ref={menuRef}>
                         <MenuTrigger />
@@ -88,8 +98,8 @@ const Bubble = props => {
                                 onSelect={() => copyToClipboard(text)}
                             />
                             <MenuItem
-                                text='Star message'
-                                icon={'star-o'}
+                                text={`${isStarred ? 'UnStar' : 'Star'} message`}
+                                icon={isStarred ? 'star' : 'star-o'}
                                 iconPack={FontAwesome}
                                 onSelect={() => starMessage(messageId, chatId, userId)}
                             />
@@ -128,6 +138,10 @@ const styles = StyleSheet.create({
         fontFamily: 'regular',
         letterSpacing: 0.3,
         fontSize: 16
+    },
+    timeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end'
     }
 });
 
