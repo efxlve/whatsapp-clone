@@ -31,7 +31,8 @@ const MenuItem = props => {
 }
 
 const Bubble = props => {
-    const { text, type, messageId, chatId, userId, date, setReply } = props;
+    const { text, type, messageId, chatId, userId, date, setReply, replyingTo, name } = props;
+    const storedUsers = useSelector(state => state.users.storedUsers);
 
     const starredMessages = useSelector(state => state.messages.starredMessages[chatId] ?? {});
 
@@ -44,7 +45,7 @@ const Bubble = props => {
 
     let Container = View;
     let isUserMessage = false;
-    const dateString = formatAmPm(date);
+    const dateString = date && formatAmPm(date);
 
     switch (type) {
         case "system":
@@ -71,6 +72,9 @@ const Bubble = props => {
             Container = TouchableWithoutFeedback;
             isUserMessage = true;
             break;
+        case "reply":
+            bubbleStyle.backgroundColor = '#F2F2F2';
+            break;
 
         default:
             break;
@@ -85,11 +89,27 @@ const Bubble = props => {
     }
 
     const isStarred = isUserMessage && starredMessages[messageId] !== undefined;
+    const replyingToUser = replyingTo && storedUsers[replyingTo.sentBy]
 
     return (
         <View style={wrapperStyle}>
             <Container onLongPress={() => menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{ width: '100%' }}>
                 <View style={bubbleStyle}>
+
+                    {
+                        name &&
+                        <Text style={styles.name}>{name}</Text>
+                    }
+
+                    {
+                        replyingToUser &&
+                        <Bubble
+                            type='reply'
+                            text={replyingTo.text}
+                            name={`${replyingToUser.firstName} ${replyingToUser.lastName}`}
+                        />
+                    }
+
                     <Text style={textStyle}>
                         {text}
                     </Text>
@@ -171,6 +191,10 @@ const styles = StyleSheet.create({
         letterSpacing: 0.3,
         color: colors.grey,
         fontSize: 12
+    },
+    name: {
+        fontFamily: 'medium',
+        letterSpacing: 0.3
     }
 });
 
