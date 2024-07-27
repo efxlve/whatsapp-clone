@@ -10,6 +10,7 @@ import {
     Platform,
     FlatList,
     Image,
+    ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -21,7 +22,7 @@ import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
-import { launchImagePicker } from "../utils/imagePickerHelper";
+import { launchImagePicker, uploadImageAsync } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = (props) => {
@@ -31,6 +32,7 @@ const ChatScreen = (props) => {
     const [errorBannerText, setErrorBannerText] = useState("");
     const [replyingTo, setReplyingTo] = useState();
     const [tempImageUri, setTempImageUri] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
@@ -102,6 +104,20 @@ const ChatScreen = (props) => {
             console.log(error);
         }
     }, [tempImageUri]);
+
+    const uploadImage = useCallback(async () => {
+        setIsLoading(true);
+
+        try {
+            const uploadUrl = await uploadImageAsync(tempImageUri, true)
+            setIsLoading(false);
+
+            setTempImageUri("");
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+        }
+    }, [isLoading, tempImageUri]);
 
     return (
         <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -196,7 +212,7 @@ const ChatScreen = (props) => {
                         </TouchableOpacity>
                     )}
 
-                    <AwesomeAlert 
+                    <AwesomeAlert
                         show={tempImageUri !== ""}
                         title="Send image?"
                         closeOnTouchOutside={true}
@@ -209,14 +225,21 @@ const ChatScreen = (props) => {
                         cancelButtonColor={colors.red}
                         titleStyle={styles.popupTitleStyle}
                         onCancelPressed={() => setTempImageUri("")}
-                        onConfirmPressed={() => console.log("Upload!")}
+                        onConfirmPressed={uploadImage}
                         onDismiss={() => setTempImageUri("")}
                         customView={(
                             <View>
-                                <Image 
-                                    source={{ uri: tempImageUri }}
-                                    style={{ width: 200, height: 200 }}
-                                />
+                                {
+                                    isLoading &&
+                                    <ActivityIndicator size='small' color={colors.primary} />
+                                }
+                                {
+                                    !isLoading && tempImageUri !== "" &&
+                                    <Image
+                                        source={{ uri: tempImageUri }}
+                                        style={{ width: 200, height: 200 }}
+                                    />
+                                }
                             </View>
                         )}
                     />
