@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     View,
     Text,
@@ -33,6 +33,8 @@ const ChatScreen = (props) => {
     const [replyingTo, setReplyingTo] = useState();
     const [tempImageUri, setTempImageUri] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    const flatList = useRef();
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
@@ -161,6 +163,9 @@ const ChatScreen = (props) => {
                         {
                             chatId &&
                             <FlatList
+                                ref={(ref) => flatList.current = ref}
+                                onContentSizeChange={() => flatList.current.scrollToEnd({ animated: false })}
+                                onLayout={() => flatList.current.scrollToEnd({ animated: false })}
                                 data={chatMessages}
                                 renderItem={(itemData) => {
                                     const message = itemData.item;
