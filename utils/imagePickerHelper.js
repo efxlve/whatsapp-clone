@@ -6,8 +6,28 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 
 export const launchImagePicker = async () => {
     await checkMediaPermissions();
-    
+
     const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1
+    });
+
+    if (!result.canceled) {
+        return result.assets[0].uri;
+    }
+}
+
+export const openCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+        console.log("No permission to access the camera");
+        return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
@@ -28,7 +48,7 @@ export const uploadImageAsync = async (uri, isChatImage = false) => {
             resolve(xhr.response);
         };
 
-        xhr.onerror = function(e) {
+        xhr.onerror = function (e) {
             console.log(e);
             reject(new TypeError("Network request failed"));
         };

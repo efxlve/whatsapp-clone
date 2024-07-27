@@ -22,7 +22,7 @@ import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
 import { createChat, sendImage, sendTextMessage } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
-import { launchImagePicker, uploadImageAsync } from "../utils/imagePickerHelper";
+import { launchImagePicker, openCamera, uploadImageAsync } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = (props) => {
@@ -105,19 +105,38 @@ const ChatScreen = (props) => {
         }
     }, [tempImageUri]);
 
+    const takePhoto = useCallback(async () => {
+        try {
+            const tempUri = await openCamera();
+            if (!tempUri) return;
+
+            setTempImageUri(tempUri);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [tempImageUri]);
+
     const uploadImage = useCallback(async () => {
         setIsLoading(true);
 
         try {
+            let id = chatId;
+            if (!id) {
+                // No chat Id. Create the chat
+                id = await createChat(userData.userId, props.route.params.newChatData);
+                setChatId(id);
+            }
+
             const uploadUrl = await uploadImageAsync(tempImageUri, true)
             setIsLoading(false);
-            await sendImage(chatId, userData.userId, uploadUrl, replyingTo && replyingTo.key)
-            setTempImageUri("");
+            await sendImage(id, userData.userId, uploadUrl, replyingTo && replyingTo.key);
+            setReplyingTo(null);
+            setTimeout(() => setTempImageUri(""), 500);
         } catch (error) {
             console.log(error);
             setIsLoading(false);
         }
-    }, [isLoading, tempImageUri]);
+    }, [isLoading, tempImageUri, chatId]);
 
     return (
         <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -160,6 +179,7 @@ const ChatScreen = (props) => {
                                         date={message.sentAt}
                                         setReply={() => setReplyingTo(message)}
                                         replyingTo={message.replyTo && chatMessages.find(i => i.key === message.replyTo)}
+                                        imageUrl={message.imageUrl}
                                     />
                                 }}
                             />
@@ -197,7 +217,7 @@ const ChatScreen = (props) => {
                     {messageText === "" && (
                         <TouchableOpacity
                             style={styles.mediaButton}
-                            onPress={() => console.log("Pressed!")}
+                            onPress={takePhoto}
                         >
                             <Feather name="camera" size={24} color={colors.blue} />
                         </TouchableOpacity>
