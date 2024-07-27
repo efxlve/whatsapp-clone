@@ -21,6 +21,8 @@ const NewChatScreen = props => {
 
     const userData = useSelector(state => state.auth.userData);
 
+    const isGroupChat = props.route.params && props.route.params.isGroupChat;
+
     useEffect(() => {
         props.navigation.setOptions({
             headerLeft: () => {
@@ -31,7 +33,7 @@ const NewChatScreen = props => {
                     />
                 </HeaderButtons>
             },
-            headerTitle: "New chat"
+            headerTitle: isGroupChat ? "Add participants" : "New chat"
         });
     }, []);
 
@@ -69,6 +71,20 @@ const NewChatScreen = props => {
     };
 
     return <PageContainer>
+        {
+            isGroupChat &&
+            <View style={styles.chatNameContainer}>
+                <View style={styles.inputContainer}>
+                    <TextInput 
+                        style={styles.textbox}
+                        placeholder='Enter a name for your chat'
+                        autoCorrect={false}
+                        autoComplete={false}
+                    />
+                </View>
+            </View>
+        }
+
         <View style={styles.searchContainer}>
             <FontAwesome name='search' size={15} color={colors.lightGrey} />
 
@@ -155,6 +171,23 @@ const styles = StyleSheet.create({
     },
     noResultsText: {
         color: colors.textColor,
+        fontFamily: 'regular',
+        letterSpacing: 0.3
+    },
+    chatNameContainer: {
+        paddingVertical: 10
+    },
+    inputContainer: {
+        width: '100%',
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        backgroundColor: colors.nearlyWhite,
+        flexDirection: 'row',
+        borderRadius: 8
+    },
+    textbox: {
+        color: colors.textColor,
+        width: '100%',
         fontFamily: 'regular',
         letterSpacing: 0.3
     }
