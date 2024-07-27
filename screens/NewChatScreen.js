@@ -130,6 +130,8 @@ const NewChatScreen = props => {
                         subTitle={userData.about}
                         image={userData.profilePicture}
                         onPress={() => userPressed(userId)}
+                        type={isGroupChat ? "checkbox" : ""}
+                        isChecked={false}
                     />;
                 }}
             />
