@@ -10,6 +10,7 @@ import { searchUsers } from '../utils/actions/userActions';
 import DataItem from '../components/DataItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { setStoredUsers } from '../store/userSlice';
+import ProfileImage from '../components/ProfileImage';
 
 const NewChatScreen = props => {
     const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const NewChatScreen = props => {
     const [selectedUsers, setSelectedUsers] = useState([]);
 
     const userData = useSelector(state => state.auth.userData);
+    const storedUsers = useSelector(state => state.users.storedUsers);
 
     const isGroupChat = props.route.params && props.route.params.isGroupChat;
     const isGroupChatDisabled = selectedUsers.length === 0 || chatName === "";
@@ -100,17 +102,36 @@ const NewChatScreen = props => {
     return <PageContainer>
         {
             isGroupChat &&
-            <View style={styles.chatNameContainer}>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        style={styles.textbox}
-                        placeholder='Enter a name for your chat'
-                        autoCorrect={false}
-                        autoComplete={false}
-                        onChangeText={text => setChatName(text)}
+            <>
+                <View style={styles.chatNameContainer}>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.textbox}
+                            placeholder='Enter a name for your chat'
+                            autoCorrect={false}
+                            autoComplete={false}
+                            onChangeText={text => setChatName(text)}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.selectedUsersContainer}>
+                    <FlatList
+                        style={styles.selectedUsersList}
+                        data={selectedUsers}
+                        horizontal={true}
+                        keyExtractor={item => item}
+                        renderItem={itemData => {
+                            const userId = itemData.item;
+                            const userData = storedUsers[userId];
+                            return <ProfileImage
+                                size={40}
+                                uri={userData.profilePicture}
+                            />
+                        }}
                     />
                 </View>
-            </View>
+            </>
         }
 
         <View style={styles.searchContainer}>
