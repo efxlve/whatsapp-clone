@@ -9,6 +9,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     FlatList,
+    Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -20,6 +21,8 @@ import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
+import { launchImagePicker } from "../utils/imagePickerHelper";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = (props) => {
     const [chatUsers, setChatUsers] = useState([]);
@@ -27,6 +30,7 @@ const ChatScreen = (props) => {
     const [chatId, setChatId] = useState(props.route?.params?.chatId);
     const [errorBannerText, setErrorBannerText] = useState("");
     const [replyingTo, setReplyingTo] = useState();
+    const [tempImageUri, setTempImageUri] = useState("");
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
@@ -87,6 +91,17 @@ const ChatScreen = (props) => {
             setTimeout(() => setErrorBannerText(""), 5000);
         }
     }, [messageText, chatId]);
+
+    const pickImage = useCallback(async () => {
+        try {
+            const tempUri = await launchImagePicker();
+            if (!tempUri) return;
+
+            setTempImageUri(tempUri);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [tempImageUri]);
 
     return (
         <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -151,7 +166,7 @@ const ChatScreen = (props) => {
                 <View style={styles.inputContainer}>
                     <TouchableOpacity
                         style={styles.mediaButton}
-                        onPress={() => console.log("Pressed!")}
+                        onPress={pickImage}
                     >
                         <Feather name="plus" size={24} color={colors.blue} />
                     </TouchableOpacity>
@@ -180,6 +195,32 @@ const ChatScreen = (props) => {
                             <Feather name="send" size={20} color={"white"} />
                         </TouchableOpacity>
                     )}
+
+                    <AwesomeAlert 
+                        show={tempImageUri !== ""}
+                        title="Send image?"
+                        closeOnTouchOutside={true}
+                        closeOnHardwareBackPress={false}
+                        showCancelButton={true}
+                        showConfirmButton={true}
+                        cancelText="Cancel"
+                        confirmText="Send image"
+                        confirmButtonColor={colors.primary}
+                        cancelButtonColor={colors.red}
+                        titleStyle={styles.popupTitleStyle}
+                        onCancelPressed={() => setTempImageUri("")}
+                        onConfirmPressed={() => console.log("Upload!")}
+                        onDismiss={() => setTempImageUri("")}
+                        customView={(
+                            <View>
+                                <Image 
+                                    source={{ uri: tempImageUri }}
+                                    style={{ width: 200, height: 200 }}
+                                />
+                            </View>
+                        )}
+                    />
+
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -221,6 +262,11 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         padding: 8,
     },
+    popupTitleStyle: {
+        fontFamily: 'medium',
+        letterSpacing: 0.3,
+        color: colors.textColor
+    }
 });
 
 export default ChatScreen;
