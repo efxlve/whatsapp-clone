@@ -13,4 +13,7 @@ export const validateInput = (inputId, inputValue) => {
     else if (inputId === "about") {
         return validateLength(inputId, inputValue, 0, 150, true);
     }
+    else if (inputId === "chatName") {
+        return validateLength(inputId, inputValue, 5, 50, false);
+    }
 };

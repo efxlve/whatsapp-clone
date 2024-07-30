@@ -76,7 +76,6 @@ const SettingsScreen = props => {
             currentValues.lastName != lastName ||
             currentValues.email != email ||
             currentValues.about != about;
-
     };
 
     return <PageContainer>

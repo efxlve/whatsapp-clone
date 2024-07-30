@@ -99,6 +99,7 @@ const ChatListScreen = props => {
 
                 if (isGroupChat) {
                     title = chatData.chatName;
+                    image = chatData.chatImage;
                 }
                 else {
                     const otherUserId = chatData.users.find(uid => uid !== userData.userId);
