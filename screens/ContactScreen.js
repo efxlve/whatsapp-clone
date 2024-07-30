@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import ProfileImage from "../components/ProfileImage";
@@ -10,6 +10,7 @@ import DataItem from "../components/DataItem";
 import SubmitButton from "../components/SubmitButton";
 
 const ContactScreen = props => {
+    const [isLoading, setIsLoading] = useState(false);
     const storedUsers = useSelector(state => state.users.storedUsers);
     const currentUser = storedUsers[props.route.params.uid];
 
@@ -29,6 +30,19 @@ const ContactScreen = props => {
 
         getCommonUserChats();
     }, []);
+
+    const removeFromChat = useCallback(() => {
+        try {
+            setIsLoading(true);
+
+            props.navigation.goBack();
+        } catch (error) {
+            console.log(error);
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }, [props.navigation, isLoading]);
 
     return <PageContainer>
         <View style={styles.topContainer}>
@@ -52,7 +66,7 @@ const ContactScreen = props => {
                 {
                     commonChats.map(cid => {
                         const chatData = storedChats[cid];
-                        return <DataItem 
+                        return <DataItem
                             key={cid}
                             title={chatData.chatName}
                             subTitle={chatData.latestMessageTtext}
@@ -67,10 +81,13 @@ const ContactScreen = props => {
 
         {
             chatData && chatData.isGroupChat &&
-            <SubmitButton 
-                title="Remove from chat"
-                color={colors.red}
-            />
+                isLoading ?
+                <ActivityIndicator size='small' color={colors.primary} /> :
+                <SubmitButton
+                    title="Remove from chat"
+                    color={colors.red}
+                    onPress={removeFromChat}
+                />
         }
 
     </PageContainer>
