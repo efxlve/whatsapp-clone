@@ -100,7 +100,7 @@ const ChatSettingsScreen = props => {
                             title={`${currentUser.firstName} ${currentUser.lastName}`}
                             subTitle={currentUser.about}
                             type={uid !== userData.userId && "link"}
-                            onPress={() => uid !== userData.userId && props.navigation.navigate("Contact", { uid })}
+                            onPress={() => uid !== userData.userId && props.navigation.navigate("Contact", { uid, chatId })}
                         />
                     })
                 }
