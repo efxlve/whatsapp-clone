@@ -10,6 +10,7 @@ import colors from '../constants/colors';
 import { updateChatData } from '../utils/actions/chatActions';
 import { validateInput } from '../utils/actions/formActions';
 import { reducer } from '../utils/reducers/formReducer';
+import DataItem from '../components/DataItem';
 
 const ChatSettingsScreen = props => {
 
@@ -80,6 +81,15 @@ const ChatSettingsScreen = props => {
                 errorText={formState.inputValidities["chatName"]}
             />
 
+            <View style={styles.sectionContainer}>
+                <Text style={styles.heading}>{chatData.users.length} Participants</Text>
+
+                <DataItem 
+                    title="Add users"
+                    icon="plus"
+                />
+            </View>
+
             {
                 showSuccessMessage && <Text>Saved!</Text>
             }
@@ -108,7 +118,17 @@ const styles = StyleSheet.create({
     scrollView: {
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    sectionContainer: {
+        width: '100%',
+        marginTop: 10
+    },
+    heading: {
+        marginVertical: 8,
+        color: colors.textColor,
+        fontFamily: 'bold',
+        letterSpacing: 0.3
+    }   
 })
 
 export default ChatSettingsScreen;
