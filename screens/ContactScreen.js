@@ -35,6 +35,8 @@ const ContactScreen = props => {
         try {
             setIsLoading(true);
 
+            
+
             props.navigation.goBack();
         } catch (error) {
             console.log(error);
