@@ -44,7 +44,7 @@ const ChatSettingsScreen = props => {
 
             setTimeout(() => {
                 setShowSuccessMessage(false)
-            }, 3000);
+            }, 1500);
         } catch (error) {
             console.log(error);
         }
@@ -79,6 +79,10 @@ const ChatSettingsScreen = props => {
                 onInputChanged={inputChangedHandler}
                 errorText={formState.inputValidities["chatName"]}
             />
+
+            {
+                showSuccessMessage && <Text>Saved!</Text>
+            }
 
             {
                 isLoading ?
