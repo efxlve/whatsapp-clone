@@ -33,7 +33,6 @@ const MenuItem = props => {
 const Bubble = props => {
     const { text, type, messageId, chatId, userId, date, setReply, replyingTo, name, imageUrl } = props;
     const storedUsers = useSelector(state => state.users.storedUsers);
-
     const starredMessages = useSelector(state => state.messages.starredMessages[chatId] ?? {});
 
     const bubbleStyle = { ...styles.container };
