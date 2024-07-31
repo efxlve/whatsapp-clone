@@ -60,7 +60,7 @@ const ChatSettingsScreen = props => {
         return currentValues.chatName != chatData.chatName;
     };
 
-    const leaveChat = useCallback( async () => {
+    const leaveChat = useCallback(async () => {
         try {
             setIsLoading(true);
 
@@ -102,7 +102,7 @@ const ChatSettingsScreen = props => {
             <View style={styles.sectionContainer}>
                 <Text style={styles.heading}>{chatData.users.length} Participants</Text>
 
-                <DataItem 
+                <DataItem
                     title="Add users"
                     icon="plus"
                     type="button"
@@ -111,7 +111,7 @@ const ChatSettingsScreen = props => {
                 {
                     chatData.users.slice(0, 4).map(uid => {
                         const currentUser = storedUsers[uid];
-                        return <DataItem 
+                        return <DataItem
                             key={uid}
                             image={currentUser.profilePicture}
                             title={`${currentUser.firstName} ${currentUser.lastName}`}
@@ -124,10 +124,11 @@ const ChatSettingsScreen = props => {
 
                 {
                     chatData.users.length > 4 &&
-                    <DataItem 
+                    <DataItem
                         type={"link"}
                         title="View all"
                         hideImage={true}
+                        onPress={() => props.navigation.navigate("DataList", { title: "Participants", data: chatData.users, type: "users", chatId })}
                     />
                 }
             </View>
@@ -150,7 +151,7 @@ const ChatSettingsScreen = props => {
         </ScrollView>
 
         {
-            <SubmitButton 
+            <SubmitButton
                 title="Leave chat"
                 color={colors.red}
                 onPress={() => leaveChat()}
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
         color: colors.textColor,
         fontFamily: 'bold',
         letterSpacing: 0.3
-    }   
+    }
 })
 
 export default ChatSettingsScreen;
