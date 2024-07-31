@@ -10,7 +10,7 @@ import { ActivityIndicator, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import colors from '../constants/colors';
 
-const isTestMode = true;
+const isTestMode = false;
 
 const initialState = {
     inputValues: {
