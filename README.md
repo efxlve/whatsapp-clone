@@ -29,6 +29,18 @@ This is a WhatsApp clone built using **React Native**, **Redux**, **Firebase**, 
    npm start
    ```
 
+## Running on iOS and Android
+
+### iOS
+1. Ensure you have Xcode installed.
+2. Use the Expo Go app on your iOS device or simulator to scan the QR code provided by `npm start`.
+3. You can also run the app on a real iOS device by scanning the QR code.
+
+### Android
+1. Install Android Studio and set up an Android Virtual Device (AVD).
+2. Alternatively, use the Expo Go app on your Android device to scan the QR code provided by `npm start`.
+3. You can also run the app on a real Android device by scanning the QR code.
+
 ## Usage
 
 - Open the app on your iOS or Android device, sign up or log in, and start chatting.
@@ -40,7 +52,6 @@ Contributions are welcome! Please open an issue or submit a pull request if you 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 
 
 
