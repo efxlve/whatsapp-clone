@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import React, { useEffect, useRef, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -12,13 +14,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
 import { child, get, getDatabase, off, onValue, ref } from "firebase/database";
 import { setChatsData } from "../store/chatSlice";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import colors from "../constants/colors";
 import commonStyles from "../constants/commonStyles";
 import { setStoredUsers } from "../store/userSlice";
 import { setChatMessages, setStarredMessages } from "../store/messagesSlice";
 import ContactScreen from "../screens/ContactScreen";
 import DataListScreen from "../screens/DataListScreen";
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -110,11 +113,43 @@ const StackNavigator = () => {
 
 const MainNavigator = (props) => {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const [isLoading, setIsLoading] = useState(true);
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    // console.log(expoPushToken);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            // Handle received notification
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            const { data } = response.notification.request.content;
+            const chatId = data["chatId"];
+
+            if (chatId) {
+                const pushAction = StackActions.push("ChatScreen", { chatId });
+                navigation.dispatch(pushAction);
+            }
+            else {
+                console.log("No chat id sent with notification");
+            }
+        });
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, []);
 
     useEffect(() => {
         console.log("Subscribing to firebase listeners");
@@ -178,8 +213,6 @@ const MainNavigator = (props) => {
                     dispatch(setChatMessages({ chatId, messagesData }));
                 })
             };
-
-            console.log(chatIds);
         })
 
         const userStarredMessagesRef = child(dbRef, `userStarredMessages/${userData.userId}`);
@@ -207,3 +240,36 @@ const MainNavigator = (props) => {
 };
 
 export default MainNavigator;
+
+async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync({
+            projectId: '2e676ef8-32b8-4baa-91db-45b2ab1c1df8'
+        })).data;
+    } else {
+        console.log('Must use physical device for Push Notifications');
+    }
+
+    return token;
+}

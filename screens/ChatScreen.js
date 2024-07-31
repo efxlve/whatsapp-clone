@@ -102,7 +102,7 @@ const ChatScreen = (props) => {
                 setChatId(id);
             }
 
-            await sendTextMessage(id, userData.userId, messageText, replyingTo && replyingTo.key);
+            await sendTextMessage(id, userData, messageText, replyingTo && replyingTo.key, chatUsers);
 
             setMessageText("");
             setReplyingTo(null);
@@ -148,7 +148,7 @@ const ChatScreen = (props) => {
 
             const uploadUrl = await uploadImageAsync(tempImageUri, true)
             setIsLoading(false);
-            await sendImage(id, userData.userId, uploadUrl, replyingTo && replyingTo.key);
+            await sendImage(id, userData, uploadUrl, replyingTo && replyingTo.key, chatUsers);
             setReplyingTo(null);
             setTimeout(() => setTempImageUri(""), 500);
         } catch (error) {
