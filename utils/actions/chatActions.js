@@ -123,7 +123,9 @@ export const removeUserFromChat = async (userLoggedInData, userToRemoveData, cha
         }
     }
 
-    const messageText = `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`;
+    const messageText = userLoggedInData.userId === userToRemoveData.userId ?
+        `${userLoggedInData.firstName} left the chat` :
+        `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`;
 
     await sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
 };
