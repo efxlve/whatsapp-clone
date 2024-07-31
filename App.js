@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { LogBox, StyleSheet } from 'react-native';
+import { Image, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useCallback, useState } from 'react';
@@ -10,6 +10,7 @@ import { store } from './store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MenuProvider } from 'react-native-popup-menu';
+import logo from './assets/images/Logo.png';
 
 LogBox.ignoreLogs(['AsyncStorage has been extracted']);
 // AsyncStorage.clear();
@@ -59,6 +60,15 @@ export default function App() {
     return null;
   }
 
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.webContainer}>
+        <Image source={logo} style={styles.logo} />
+        <Text style={styles.webMessage}>This application is not supported on the web.</Text>
+      </View>
+    );
+  }
+
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -81,5 +91,23 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: "regular"
+  },
+  webContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white', 
+    padding: 20
+  },
+  webMessage: {
+    fontSize: 18,
+    color: '#333', 
+    textAlign: 'center',
+    marginTop: 20
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain'
   }
 });
