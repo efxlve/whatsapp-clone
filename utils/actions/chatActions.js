@@ -26,11 +26,15 @@ export const createChat = async (loggedInUserId, chatData) => {
 };
 
 export const sendTextMessage = async (chatId, senderId, messageText, replyTo) => {
-    await sendMessage(chatId, senderId, messageText, null, replyTo);
+    await sendMessage(chatId, senderId, messageText, null, replyTo, null);
+};
+
+export const sendInfoMessage = async (chatId, senderId, messageText) => {
+    await sendMessage(chatId, senderId, messageText, null, null, "info");
 };
 
 export const sendImage = async (chatId, senderId, imageUrl, replyTo) => {
-    await sendMessage(chatId, senderId, 'Image', imageUrl, replyTo);
+    await sendMessage(chatId, senderId, 'Image', imageUrl, replyTo, null);
 };
 
 export const updateChatData = async (chatId, userId, chatData) => {
@@ -45,7 +49,7 @@ export const updateChatData = async (chatId, userId, chatData) => {
     })
 }
 
-const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo) => {
+const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo, type) => {
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase());
     const messagesRef = child(dbRef, `messages/${chatId}`);
@@ -62,6 +66,10 @@ const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo) => 
 
     if (imageUrl) {
         messageData.imageUrl = imageUrl;
+    }
+
+    if (type) {
+        messageData.type = type;
     }
 
     await push(messagesRef, messageData);
@@ -102,7 +110,7 @@ export const starMessage = async (messageId, chatId, userId) => {
 export const removeUserFromChat = async (userLoggedInData, userToRemoveData, chatData) => {
     const userToRemoveId = userToRemoveData.userId;
     const newUsers = chatData.users.filter(uid => uid !== userToRemoveId);
-    await updateChatData(chatData.key, userLoggedInData.userId, { users: newUsers });
+    // await updateChatData(chatData.key, userLoggedInData.userId, { users: newUsers });
 
     const userChats = await getUserChats(userToRemoveId);
 
@@ -110,8 +118,12 @@ export const removeUserFromChat = async (userLoggedInData, userToRemoveData, cha
         const currentChatId = userChats[key];
 
         if (currentChatId === chatData.key) {
-            await deleteUserChat(userToRemoveId, key);
+            // await deleteUserChat(userToRemoveId, key);
             break;
         }
     }
+
+    const messageText = `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`;
+
+    await sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
 };
