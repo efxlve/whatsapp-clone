@@ -57,6 +57,27 @@ This is a WhatsApp clone built using **React Native**, **Redux**, **Firebase**, 
   <img src="https://github.com/user-attachments/assets/cba1866e-5fa0-43c7-b55b-8aadbc21b1b0" alt="Sign up">
 </details>
 
+<details>
+  <summary>Chats</summary>
+  <img src="https://github.com/user-attachments/assets/e1d4c3cd-9ff0-4ad2-a408-af9f6200c2d7" alt="Chats">
+</details>
+
+<details>
+  <summary>Settings</summary>
+  <img src="https://github.com/user-attachments/assets/de6ec94d-6810-4879-ae26-b91c757b42ff" alt="Settings">
+</details>
+
+<details>
+  <summary>Starred Messages</summary>
+  <img src="https://github.com/user-attachments/assets/875f4612-a5a2-4951-9d07-86c18ed9a48d" alt="Starred Messages">
+</details>
+
+<details>
+  <summary>New Chat</summary>
+  <img src="https://github.com/user-attachments/assets/012b5914-379e-4d33-9a19-c3a4a8a2fdd8" alt="New Chat">
+</details>
+
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
