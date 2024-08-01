@@ -45,6 +45,18 @@ This is a WhatsApp clone built using **React Native**, **Redux**, **Firebase**, 
 
 - Open the app on your iOS or Android device, sign up or log in, and start chatting.
 
+## Screenshots
+
+<details>
+  <summary>Sign in</summary>
+  <img src="https://github.com/user-attachments/assets/9d583368-f7ff-460c-b0a8-14e72ae8d373" alt="Sign in">
+</details>
+
+<details>
+  <summary>Sign up</summary>
+  <img src="https://github.com/user-attachments/assets/cba1866e-5fa0-43c7-b55b-8aadbc21b1b0" alt="Sign up">
+</details>
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
