@@ -87,6 +87,21 @@ This is a WhatsApp clone built using **React Native**, **Redux**, **Firebase**, 
   <img src="https://github.com/user-attachments/assets/8209a99f-57c1-4a50-aeed-7a66fe213085" alt="Chat">
 </details>
 
+<details>
+  <summary>Chat Settings</summary>
+  <img src="https://github.com/user-attachments/assets/764d7f3e-af4c-4151-a7dc-aab003923258" alt="Chat Settings">
+</details>
+
+<details>
+  <summary>Send Image</summary>
+  <img src="https://github.com/user-attachments/assets/3a876d12-55c0-4294-afd0-57f2aadd4eca" alt="Send Image">
+</details>
+
+<details>
+  <summary>Message Context Menu</summary>
+  <img src="https://github.com/user-attachments/assets/1e01a8ee-32ee-499d-81e2-1943dda31944" alt="Message Context Menu">
+</details>
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request if you have any suggestions or improvements.
