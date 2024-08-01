@@ -77,6 +77,15 @@ This is a WhatsApp clone built using **React Native**, **Redux**, **Firebase**, 
   <img src="https://github.com/user-attachments/assets/012b5914-379e-4d33-9a19-c3a4a8a2fdd8" alt="New Chat">
 </details>
 
+<details>
+  <summary>New Group</summary>
+  <img src="https://github.com/user-attachments/assets/e1e861d8-cf07-4700-b2ee-b2c8f785777e" alt="New Group">
+</details>
+
+<details>
+  <summary>Chat</summary>
+  <img src="https://github.com/user-attachments/assets/8209a99f-57c1-4a50-aeed-7a66fe213085" alt="Chat">
+</details>
 
 ## Contributing
 
