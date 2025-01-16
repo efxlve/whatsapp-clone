@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct RootScreen: View {
+    @StateObject private var viewModel = RootScreenModel()
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        switch viewModel.authState {
+        case .pending:
+            ProgressView()
+                .controlSize(.large)
+        
+        case .authenticated(let loggedInUser):
+            MainTabView(loggedInUser)
+            
+        case .unauthenticated:
+            SignInScreen()
+            
+        }
     }
 }
 

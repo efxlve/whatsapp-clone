@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SignInScreen: View {
+    @StateObject private var authScreenModel = AuthScreenModel()
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -16,14 +18,17 @@ struct SignInScreen: View {
                 AuthHeaderView()
                     .padding(.bottom, 32)
                 
-                AuthTextField(type: .email, text: .constant(""))
-                AuthTextField(type: .password, text: .constant(""))
+                AuthTextField(type: .email, text: $authScreenModel.email)
+                AuthTextField(type: .password, text: $authScreenModel.password)
                 
                 forgotPasswordButton()
                 
                 AuthButton(title: "Sign in") {
-                    
+                    Task {
+                        await authScreenModel.handleSignIn()
+                    }
                 }
+                .disabled(authScreenModel.disableSignInButton)
                 
                 Spacer()
 
@@ -35,6 +40,9 @@ struct SignInScreen: View {
                 LinearGradient(colors: [.green, .teal], startPoint: .top, endPoint: .bottom)
             }
             .ignoresSafeArea()
+            .alert(isPresented: $authScreenModel.errorState.showError) {
+                Alert(title: Text(authScreenModel.errorState.errorMessage), dismissButton: .default(Text("OK")))
+            }
         }
         .environment(\.colorScheme, .light)
     }
@@ -54,7 +62,7 @@ struct SignInScreen: View {
     
     private func signUpButton() -> some View {
         NavigationLink {
-            SignUpScreen()
+            SignUpScreen(authScreenModel: authScreenModel)
         } label: {
             HStack {
                 Text("Don't have an account?")
