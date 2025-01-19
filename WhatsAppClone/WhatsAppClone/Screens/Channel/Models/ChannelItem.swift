@@ -18,11 +18,23 @@ struct ChannelItem: Identifiable {
     var adminUids: [String]
     var memberUids: [String]
     var members: [UserItem]
-    var thumbnailUrl: String?
+    private var thumbnailUrl: String?
     let createdBy: String
     
     var isGroupChat: Bool {
         return membersCount > 2
+    }
+    
+    var coverImageUrl: String? {
+        if let thumbnailUrl = thumbnailUrl {
+            return thumbnailUrl
+        }
+        
+        if isGroupChat == false {
+            return membersExcludingMe.first?.profileImageURL
+        }
+        
+        return nil
     }
     
     var membersExcludingMe: [UserItem] {
@@ -54,6 +66,14 @@ struct ChannelItem: Identifiable {
         }
         
         return "Unknown"
+    }
+    
+    var isCreatedByMe: Bool {
+        return createdBy == Auth.auth().currentUser?.uid ?? ""
+    }
+    
+    var creatorName: String {
+        return members.first { $0.uid == createdBy }?.username ?? "Unknown User"
     }
     
     static let placeholder = ChannelItem.init(id: "1", lastMessage: "Hello World!", creationDate: Date(), lastMessageTimestamp: Date(), membersCount: 2, adminUids: [], memberUids: [], members: [], createdBy: "")
