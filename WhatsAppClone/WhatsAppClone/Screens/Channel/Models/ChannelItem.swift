@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseAuth
 
-struct ChannelItem: Identifiable {
+struct ChannelItem: Identifiable, Hashable {
     var id: String
     var name: String?
     var lastMessage: String
@@ -74,6 +74,10 @@ struct ChannelItem: Identifiable {
     
     var creatorName: String {
         return members.first { $0.uid == createdBy }?.username ?? "Unknown User"
+    }
+    
+    var allMembersFetched: Bool {
+        return members.count == membersCount
     }
     
     static let placeholder = ChannelItem.init(id: "1", lastMessage: "Hello World!", creationDate: Date(), lastMessageTimestamp: Date(), membersCount: 2, adminUids: [], memberUids: [], members: [], createdBy: "")

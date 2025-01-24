@@ -36,7 +36,7 @@ struct MessageService {
             var messages: [MessageItem] = []
             dict.forEach { key, value in
                 let messageDict = value as? [String: Any] ?? [:]
-                let message = MessageItem(id: key, dict: messageDict)
+                let message = MessageItem(id: key, isGroupChat: channel.isGroupChat, dict: messageDict)
                 messages.append(message)
                 if messages.count == snapshot.childrenCount {
                     messages.sort { $0.timeStamp < $1.timeStamp }
@@ -47,4 +47,16 @@ struct MessageService {
             print("Failed to fetch messages: \(error.localizedDescription)")
         }
     }
+}
+
+struct MessageUploadParams {
+    let channel: ChannelItem
+    let text: String
+    let type: MessageType
+    let attachment: MediaAttachment
+    var thumbnail: String?
+    var videoURL: String?
+    var sender: UserItem
+    var audioURL: String?
+    var audioDuration: TimeInterval?
 }
