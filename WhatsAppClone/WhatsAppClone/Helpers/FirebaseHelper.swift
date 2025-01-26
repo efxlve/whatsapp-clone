@@ -27,42 +27,60 @@ extension UploadError: LocalizedError {
 }
 
 struct FirebaseHelper {
-    static func uploadImge(_ image: UIImage, for type: UploadType, completion: @escaping UploadResult, progressHandler: @escaping ProgressHandler) {
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
+    private static var isUploading = false
+    private static var activeUploads: [String: Bool] = [:]
+    
+    static func uploadImage(_ image: UIImage, for type: UploadType, completion: @escaping UploadResult, progressHandler: @escaping ProgressHandler) {
+        guard !isUploading else {
+            completion(.failure(UploadError.failedToUploadImage("An upload is already in progress.")))
+            return
+        }
+        isUploading = true
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+            isUploading = false
+            completion(.failure(UploadError.failedToUploadImage("Failed to convert image to data.")))
+            return
+        }
         
         let storageRef = type.filePath
         let uploadTask = storageRef.putData(imageData) { metadata, error in
+            isUploading = false
             if let error = error {
                 completion(.failure(UploadError.failedToUploadImage(error.localizedDescription)))
                 return
             }
-            
             storageRef.downloadURL(completion: completion)
-                
         }
         
         uploadTask.observe(.progress) { snapshot in
             guard let progress = snapshot.progress else { return }
-            let percentage = Double(progress.completedUnitCount / progress.totalUnitCount)
+            let percentage = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
             progressHandler(percentage)
         }
     }
     
     static func uploadFile(for type: UploadType, fileURL: URL, completion: @escaping UploadResult, progressHandler: @escaping ProgressHandler) {
+        let uploadKey = UUID().uuidString
+        guard !activeUploads.keys.contains(uploadKey) else {
+            completion(.failure(UploadError.failedToUploadFile("Duplicate upload request detected.")))
+            return
+        }
+        activeUploads[uploadKey] = true
+        
         let storageRef = type.filePath
         let uploadTask = storageRef.putFile(from: fileURL) { metadata, error in
+            activeUploads[uploadKey] = false
             if let error = error {
                 completion(.failure(UploadError.failedToUploadFile(error.localizedDescription)))
                 return
             }
-            
             storageRef.downloadURL(completion: completion)
-            
         }
         
         uploadTask.observe(.progress) { snapshot in
             guard let progress = snapshot.progress else { return }
-            let percentage = Double(progress.completedUnitCount / progress.totalUnitCount)
+            let percentage = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
             progressHandler(percentage)
         }
     }

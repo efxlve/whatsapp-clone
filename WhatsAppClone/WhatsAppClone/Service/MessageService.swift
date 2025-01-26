@@ -17,7 +17,7 @@ struct MessageService {
             .lastMessageTimestamp: timeStamp,
         ]
             
-        let messageDic: [String: Any] = [
+        let messageDict: [String: Any] = [
             .text: textMessage,
             .type: MessageType.text.title,
             .timeStamp: timeStamp,
@@ -25,9 +25,39 @@ struct MessageService {
         ]
         
         FirebaseConstants.ChannelsRef.child(channel.id).updateChildValues(channelDict)
-        FirebaseConstants.MessagesRef.child(channel.id).child(messageId).setValue(messageDic)
+        FirebaseConstants.MessagesRef.child(channel.id).child(messageId).setValue(messageDict)
         
         onComplete()
+    }
+    
+    static func sendMediaMessage(to channel: ChannelItem, params: MessageUploadParams, completion: @escaping() -> Void) {
+        guard let messageId = FirebaseConstants.MessagesRef.childByAutoId().key else { return }
+        let timeStamp = Date().timeIntervalSince1970
+        
+        let channelDict: [String: Any] = [
+            .lastMessage: params.text,
+            .lastMessageTimestamp: timeStamp,
+            .lastMessageType: params.type.title
+        ]
+        
+        var messageDict: [String: Any] = [
+            .text: params.text,
+            .type: params.type.title,
+            .timeStamp: timeStamp,
+            .ownerUid: params.ownerUID
+        ]
+        
+        messageDict[.thumbnailUrl] = params.thumbnailURL ?? nil
+        messageDict[.thumbnailWidth] = params.thumbnailWidth ?? nil
+        messageDict[.thumbnailHeight] = params.thumbnailHeight ?? nil
+        
+        FirebaseConstants.ChannelsRef.child(channel.id).updateChildValues(channelDict)
+        FirebaseConstants.MessagesRef.child(channel.id).child(messageId).setValue(messageDict) { error, _ in
+            if error == nil {
+                FirebaseConstants.ChannelsRef.child(channel.id).updateChildValues(channelDict)
+            }
+        }
+        completion()
     }
     
     static func getMessages(for channel: ChannelItem, completion: @escaping([MessageItem]) -> Void) {
@@ -54,9 +84,23 @@ struct MessageUploadParams {
     let text: String
     let type: MessageType
     let attachment: MediaAttachment
-    var thumbnail: String?
+    var thumbnailURL: String?
     var videoURL: String?
     var sender: UserItem
     var audioURL: String?
     var audioDuration: TimeInterval?
+    
+    var ownerUID: String {
+        return sender.uid
+    }
+    
+    var thumbnailWidth: CGFloat? {
+        guard type == .photo || type == .video else { return nil }
+        return attachment.thumbnail.size.width
+    }
+    
+    var thumbnailHeight: CGFloat? {
+        guard  type == .photo || type == .video else { return nil }
+        return attachment.thumbnail.size.height
+    }
 }
