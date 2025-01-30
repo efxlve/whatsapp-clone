@@ -279,6 +279,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WhatsApp;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to this let's you record voice messages.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Access to this let's you record voice messages.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -309,6 +310,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WhatsApp;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to this let's you record voice messages.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Access to this let's you record voice messages.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
