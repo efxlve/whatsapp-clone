@@ -72,6 +72,19 @@ struct MessageItem: Identifiable {
         return audioDuration?.formatElapsedTime ?? "00:00"
     }
     
+    var isSentByMe: Bool {
+        return ownerUid == Auth.auth().currentUser?.uid ?? ""
+    
+    }
+    
+    func containsSameOwner(as message: MessageItem) -> Bool {
+        if let userA = message.sender, let userB = sender {
+            return userA == userB
+        } else {
+            return false
+        }
+    }
+    
     static let stubMessages: [MessageItem] = [
         MessageItem(id: UUID().uuidString, isGroupChat: false, text: "Hi There", type: .text, ownerUid: "3", timeStamp: Date(), thumbnailUrl: nil),
         MessageItem(id: UUID().uuidString, isGroupChat: true, text: "Check out this Photo", type: .photo, ownerUid: "4", timeStamp: Date(), thumbnailUrl: nil),

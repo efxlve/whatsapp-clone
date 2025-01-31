@@ -11,7 +11,7 @@ import FirebaseAuth
 struct ChannelItem: Identifiable, Hashable {
     var id: String
     var name: String?
-    var lastMessage: String
+    private var lastMessage: String
     var creationDate: Date
     var lastMessageTimestamp: Date
     var membersCount: Int
@@ -20,6 +20,7 @@ struct ChannelItem: Identifiable, Hashable {
     var members: [UserItem]
     private var thumbnailUrl: String?
     let createdBy: String
+    let lastMessageType: MessageType
     
     var isGroupChat: Bool {
         return membersCount > 2
@@ -80,7 +81,23 @@ struct ChannelItem: Identifiable, Hashable {
         return members.count == membersCount
     }
     
-    static let placeholder = ChannelItem.init(id: "1", lastMessage: "Hello World!", creationDate: Date(), lastMessageTimestamp: Date(), membersCount: 2, adminUids: [], memberUids: [], members: [], createdBy: "")
+    var previewMessage: String {
+        switch lastMessageType {
+            
+        case .admin:
+            return "New Channel Created"
+        case .text:
+            return lastMessage
+        case .photo:
+            return "Photo"
+        case .video:
+            return "Video"
+        case .audio:
+            return "Audio"
+        }
+    }
+    
+    static let placeholder = ChannelItem.init(id: "1", lastMessage: "Hello World!", creationDate: Date(), lastMessageTimestamp: Date(), membersCount: 2, adminUids: [], memberUids: [], members: [], createdBy: "", lastMessageType: .text)
 }
 
 extension ChannelItem {
@@ -98,6 +115,8 @@ extension ChannelItem {
         self.thumbnailUrl = dict[.thumbnailUrl] as? String ?? nil
         self.members = dict[.members] as? [UserItem] ?? []
         self.createdBy = dict[.createdBy] as? String ?? ""
+        let msfTypeValue = dict[.lastMessageType] as? String ?? "text"
+        self.lastMessageType = MessageType(msfTypeValue) ?? .text
     }
 }
 

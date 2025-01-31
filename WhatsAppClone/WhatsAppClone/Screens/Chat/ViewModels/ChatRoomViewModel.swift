@@ -319,4 +319,18 @@ final class ChatRoomViewModel: ObservableObject {
         let priorMessage = messages[priorIndex]
         return !message.timeStamp.isSameDay(as: priorMessage.timeStamp)
     }
+    
+    func showSenderName(for message: MessageItem, at index: Int) -> Bool {
+        guard channel.isGroupChat else { return false }
+        
+        let isNewDay = isNewDay(for: message, at: index)
+        let priorIndex = max(0, (index - 1))
+        let priorMessage = messages[priorIndex]
+        
+        if isNewDay {
+            return !message.isSentByMe
+        } else {
+            return !message.isSentByMe && !message.containsSameOwner(as: priorMessage)
+        }
+    }
 }
