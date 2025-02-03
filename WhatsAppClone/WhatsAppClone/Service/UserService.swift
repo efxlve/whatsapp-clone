@@ -9,7 +9,6 @@ import Firebase
 import FirebaseDatabase
 
 struct UserService {
-    
     static func getUsers(with uids: [String], completion: @escaping (UserNode) -> Void) {
         var users: [UserItem] = []
         for uid in uids {
