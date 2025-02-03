@@ -37,10 +37,12 @@ struct ChannelItemView: View {
     
     private func lastMessagePreviewTextView() -> some View {
         HStack(spacing: 4) {
-            Image(systemName: channel.lastMessageType.iconName)
-                .foregroundStyle(.gray)
-                .imageScale(.small)
-                
+            if channel.lastMessageType != .text {
+                Image(systemName: channel.lastMessageType.iconName)
+                    .foregroundStyle(.gray)
+                    .imageScale(.small)
+            }
+            
             Text(channel.previewMessage)
                 .font(.system(size: 16))
                 .lineLimit(2)

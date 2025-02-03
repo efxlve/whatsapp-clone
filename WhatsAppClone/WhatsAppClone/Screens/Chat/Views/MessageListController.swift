@@ -41,6 +41,7 @@ final class MessageListController: UIViewController {
     
     private let viewModel: ChatRoomViewModel
     private var subscriptions = Set<AnyCancellable>()
+    private var lastScrollPosition: String?
     
     private lazy var pullToRefresh: UIRefreshControl = {
         let pullToRefresh = UIRefreshControl()
@@ -80,10 +81,29 @@ final class MessageListController: UIViewController {
         return backgroundImageView
     }()
     
+    private let pullDownHUDView: UIButton = {
+        var buttonConfig = UIButton.Configuration.filled()
+        var imageConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .black)
+        
+        let image = UIImage(systemName: "arrow.down.circle.fill", withConfiguration: imageConfig)
+        buttonConfig.image = image
+        buttonConfig.baseBackgroundColor = .bubbleGreen
+        buttonConfig.baseForegroundColor = .whatsAppBlack
+        buttonConfig.imagePadding = 5
+        buttonConfig.cornerStyle = .capsule
+        let font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        buttonConfig.attributedTitle = AttributedString("Pull to Down", attributes: AttributeContainer([NSAttributedString.Key.font: font]))
+        let button = UIButton(configuration: buttonConfig)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.alpha = 0
+        return button
+    }()
+    
     // MARK: - Methods
     private func configureUI() {
         view.addSubview(backgroundImageView)
         view.addSubview(messagesCollectionView)
+        view.addSubview(pullDownHUDView)
         
         NSLayoutConstraint.activate([
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -94,7 +114,10 @@ final class MessageListController: UIViewController {
             messagesCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
             messagesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             messagesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            messagesCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            messagesCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            pullDownHUDView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            pullDownHUDView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
 }
     
@@ -113,14 +136,28 @@ final class MessageListController: UIViewController {
                     self?.messagesCollectionView.scrollToLastItem(at: .bottom, animated: scrollRequest.isAnimated)
                 }
             }.store(in: &subscriptions)
+        
+        viewModel.$isPaginating
+            .debounce(for: .milliseconds(delay), scheduler: DispatchQueue.main)
+            .sink {[weak self] isPaginatable in
+                guard let self = self, let lastScrollPosition else { return }
+                if isPaginatable == false {
+                    guard let index = viewModel.messages.firstIndex(where: { $0.id == lastScrollPosition }) else { return }
+                    
+                    let indexPath = IndexPath(item: index, section: 0)
+                    self.messagesCollectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                    self.pullToRefresh.endRefreshing()
+                }
+            }.store(in: &subscriptions)
     }
     
     @objc private func handleRefresh() {
-        messagesCollectionView.refreshControl?.endRefreshing()
+        lastScrollPosition = viewModel.messages.first?.id
+        viewModel.paginateMoreMessages()
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 
 extension MessageListController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -150,6 +187,14 @@ extension MessageListController: UICollectionViewDelegate, UICollectionViewDataS
             viewModel.showMediaPlayer(videoURL)
         default:
             break
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y <= 0 {
+            pullDownHUDView.alpha = viewModel.isPaginatable ? 1 : 0
+        } else {
+            pullDownHUDView.alpha = 0
         }
     }
 }

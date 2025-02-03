@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseDatabaseInternal
 
 struct MessageService {
     static func sendTextMessage(to channel: ChannelItem, from currentUser: UserItem, _ textMessage: String, onComplete: () -> Void) {
@@ -84,7 +85,87 @@ struct MessageService {
             print("Failed to fetch messages: \(error.localizedDescription)")
         }
     }
+    
+    static func getHistoricalMessages(
+        for channel: ChannelItem,
+        lastCursor: String?,
+        pageSize: UInt,
+        completion: @escaping (MessageNode) -> Void) {
+            
+        let query: DatabaseQuery
+            
+        if lastCursor == nil {
+            query = FirebaseConstants.MessagesRef.child(channel.id).queryLimited(toLast: pageSize)
+        } else {
+            query = FirebaseConstants.MessagesRef.child(channel.id).queryOrderedByKey().queryEnding(atValue: lastCursor).queryLimited(toLast: pageSize)
+        }
+        
+        query.observeSingleEvent(of: .value) { mainSnapshot in
+            
+            guard let first = mainSnapshot.children.allObjects.first as? DataSnapshot, let allObjects = mainSnapshot.children.allObjects as? [DataSnapshot] else { return }
+                
+            var messages: [MessageItem] = allObjects.compactMap { messageSnapshot in
+                let messageDict = messageSnapshot.value as? [String: Any] ?? [:]
+                var message = MessageItem(id: messageSnapshot.key, isGroupChat: channel.isGroupChat, dict: messageDict)
+                let messageSender = channel.members.first(where: { $0.uid == message.ownerUid })
+                message.sender = messageSender
+                return message
+            }
+            
+            messages.sort { $0.timeStamp < $1.timeStamp }
+            
+            if messages.count == mainSnapshot.childrenCount {
+                if lastCursor == nil {
+                    messages.removeLast()
+                }
+                let filterMessages = lastCursor == nil ? messages : messages.filter { $0.id != lastCursor }
+                let messageNode = MessageNode(messages: filterMessages, currentCursor: first.key)
+                
+                completion(messageNode)
+            }
+        } withCancel: { error in
+            print("Failed to fetch historical messages: \(error.localizedDescription)")
+            completion(.emptyNode)
+        }
+    }
+    
+    static func getFirstMessage(in channel: ChannelItem, completion: @escaping (MessageItem) -> Void) {
+        FirebaseConstants.MessagesRef.child(channel.id)
+            .queryLimited(toFirst: 1)
+            .observeSingleEvent(of: .value) { snapshot  in
+                guard let dict = snapshot.value as? [String: Any] else { return }
+                dict.forEach { key, value in
+                    guard let messageDict = value as? [String: Any] else { return }
+                    var firstMessage = MessageItem(id: key, isGroupChat: channel.isGroupChat, dict: messageDict)
+                    let messageSender = channel.members.first(where: { $0.uid == firstMessage.ownerUid })
+                    firstMessage.sender = messageSender
+                    completion(firstMessage)
+                }
+                    
+            } withCancel: { error in
+                print("Failed to fetch first message: \(error.localizedDescription)")
+            }
+    }
+    
+    static func listenForNewMessages(in channel: ChannelItem, completion: @escaping (MessageItem) -> Void) {
+        FirebaseConstants.MessagesRef.child(channel.id)
+            .queryLimited(toLast: 1)
+            .observe(.childAdded) { snapshot in
+                guard let dict = snapshot.value as? [String: Any] else { return }
+                var newMessage = MessageItem(id: snapshot.key, isGroupChat: channel.isGroupChat, dict: dict)
+                let messageSender = channel.members.first(where: { $0.uid == newMessage.ownerUid })
+                newMessage.sender = messageSender
+                completion(newMessage)
+            }
+    }
 }
+
+struct MessageNode {
+    var messages: [MessageItem]
+    var currentCursor: String?
+    static let emptyNode = MessageNode(messages: [], currentCursor: nil)
+}
+
 
 struct MessageUploadParams {
     let channel: ChannelItem
