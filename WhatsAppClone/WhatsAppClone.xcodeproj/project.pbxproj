@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2411FBAD2D52203F00D6B1B3 /* AlertKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2411FBAC2D52203F00D6B1B3 /* AlertKit */; };
 		242D096F2D318B2100F54F63 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 242D096E2D318B2100F54F63 /* FirebaseAuth */; };
 		242D09712D318B2100F54F63 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 242D09702D318B2100F54F63 /* FirebaseDatabase */; };
 		242D09732D318B2100F54F63 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 242D09722D318B2100F54F63 /* FirebaseMessaging */; };
@@ -33,6 +34,7 @@
 			files = (
 				242D09732D318B2100F54F63 /* FirebaseMessaging in Frameworks */,
 				242D09752D318B2100F54F63 /* FirebaseStorage in Frameworks */,
+				2411FBAD2D52203F00D6B1B3 /* AlertKit in Frameworks */,
 				242D09712D318B2100F54F63 /* FirebaseDatabase in Frameworks */,
 				242D096F2D318B2100F54F63 /* FirebaseAuth in Frameworks */,
 				24D170072D3D590500BE9C10 /* Kingfisher in Frameworks */,
@@ -83,6 +85,7 @@
 				242D09722D318B2100F54F63 /* FirebaseMessaging */,
 				242D09742D318B2100F54F63 /* FirebaseStorage */,
 				24D170062D3D590500BE9C10 /* Kingfisher */,
+				2411FBAC2D52203F00D6B1B3 /* AlertKit */,
 			);
 			productName = WhatsAppClone;
 			productReference = 24B1646E2D2AE2FC0023169F /* WhatsAppClone.app */;
@@ -115,6 +118,7 @@
 			packageReferences = (
 				242D096D2D318B2100F54F63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				24D170052D3D590500BE9C10 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				2411FBAB2D52203F00D6B1B3 /* XCRemoteSwiftPackageReference "AlertKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24B1646F2D2AE2FC0023169F /* Products */;
@@ -352,6 +356,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2411FBAB2D52203F00D6B1B3 /* XCRemoteSwiftPackageReference "AlertKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparrowcode/AlertKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.9;
+			};
+		};
 		242D096D2D318B2100F54F63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -371,6 +383,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2411FBAC2D52203F00D6B1B3 /* AlertKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2411FBAB2D52203F00D6B1B3 /* XCRemoteSwiftPackageReference "AlertKit" */;
+			productName = AlertKit;
+		};
 		242D096E2D318B2100F54F63 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 242D096D2D318B2100F54F63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -21,6 +21,7 @@ final class MessageListController: UIViewController {
         view.backgroundColor = .clear
         configureUI()
         setUpMessageListener()
+        setUpLongPressGestureRecognizer()
     }
     
     init(_ viewModel: ChatRoomViewModel) {
@@ -42,6 +43,15 @@ final class MessageListController: UIViewController {
     private let viewModel: ChatRoomViewModel
     private var subscriptions = Set<AnyCancellable>()
     private var lastScrollPosition: String?
+    
+    // MARK: - Custom Reactions Properties
+    
+    private var startingFrame: CGRect?
+    private var blurView: UIVisualEffectView?
+    private var focusedView: UIView?
+    private var highlightedCell: UICollectionViewCell?
+    private var reactionHostVC: UIViewController?
+    private var messageMenuHostVC: UIViewController?
     
     private lazy var pullToRefresh: UIRefreshControl = {
         let pullToRefresh = UIRefreshControl()
@@ -199,6 +209,146 @@ extension MessageListController: UICollectionViewDelegate, UICollectionViewDataS
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension MessageListController {
+    private func setUpLongPressGestureRecognizer() {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGestureRecognizer))
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        messagesCollectionView.addGestureRecognizer(longPressGestureRecognizer)
+    }
+    
+    @objc private func handleLongPressGestureRecognizer(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        
+        let point = gesture.location(in: messagesCollectionView)
+        guard let indexPath = messagesCollectionView.indexPathForItem(at: point) else { return }
+        
+        let message = viewModel.messages[indexPath.item]
+        guard message.type.isAdminMessage == false else { return }
+        
+        guard let selectedCell = messagesCollectionView.cellForItem(at: indexPath) else { return }
+        
+        startingFrame = selectedCell.superview?.convert(selectedCell.frame, to: nil)
+        
+        guard let snapshotCell = selectedCell.snapshotView(afterScreenUpdates: false) else { return }
+        
+        let topGesture = UITapGestureRecognizer(target: self, action: #selector(dismissContextMenu))
+        
+        focusedView = UIView(frame: startingFrame ?? .zero)
+        
+        guard let focusedView = focusedView else { return }
+        
+        focusedView.isUserInteractionEnabled = false
+        
+        let blurEffect = UIBlurEffect(style: .regular)
+        
+        blurView = UIVisualEffectView(effect: blurEffect)
+        
+        guard let blurView = blurView else { return }
+        
+        blurView.contentView.isUserInteractionEnabled = true
+        blurView.contentView.addGestureRecognizer(topGesture)
+        blurView.alpha = 0
+        highlightedCell = selectedCell
+        highlightedCell?.alpha = 0
+        
+        guard let keyWindow = UIWindowScene.current?.keyWindow else { return }
+        
+        keyWindow.addSubview(blurView)
+        keyWindow.addSubview(focusedView)
+        focusedView.addSubview(snapshotCell)
+        blurView.frame = keyWindow.frame
+        
+        let isNewDay = viewModel.isNewDay(for: message, at: indexPath.item)
+        
+        attachMenuActionItems(to: message, in: keyWindow, isNewDay)
+        
+        let shrinkCell = shrinkCell(startingFrame?.height ?? 0)
+        
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1, options: .curveEaseIn) {
+            blurView.alpha = 1
+            focusedView.center.y = keyWindow.center.y - 60
+            snapshotCell.frame = focusedView.bounds
+            
+            snapshotCell.layer.applyShadow(color: .gray, alpha: 0.2, x: 0, y: 2, blur: 4)
+            
+            if shrinkCell {
+                let xTranslation: CGFloat = message.direction == .received ? -80 : 80
+                let translation = CGAffineTransform(translationX: xTranslation, y: 1)
+                focusedView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5).concatenating(translation)
+            }
+        }
+    }
+    
+    private func attachMenuActionItems(to message: MessageItem, in windows: UIWindow, _ isNewDay: Bool) {
+        guard let focusedView, let startingFrame else { return }
+        let shrinkCell = shrinkCell(startingFrame.height)
+        
+        let reactionPickerView = ReactionPickerView(message: message)
+        
+        let reactionHostVC = UIHostingController(rootView: reactionPickerView)
+        reactionHostVC.view.backgroundColor = .clear
+        reactionHostVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        var reactionPadding: CGFloat = isNewDay ? 45 : 0
+        if shrinkCell {
+            reactionPadding += (startingFrame.height / 3)
+        }
+        
+        windows.addSubview(reactionHostVC.view)
+        reactionHostVC.view.bottomAnchor.constraint(equalTo: focusedView.topAnchor, constant: reactionPadding).isActive = true
+        reactionHostVC.view.leadingAnchor.constraint(equalTo: focusedView.leadingAnchor, constant: 20).isActive = message.direction == .received
+        reactionHostVC.view.trailingAnchor.constraint(equalTo: focusedView.trailingAnchor, constant: -20).isActive = message.direction == .sent
+        
+        let messageMenuView = MessageMenuView(message: message)
+        let messageMenuHostVC = UIHostingController(rootView: messageMenuView)
+        messageMenuHostVC.view.backgroundColor = .clear
+        messageMenuHostVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        var menuPadding: CGFloat = 0
+        if shrinkCell {
+            menuPadding -= (startingFrame.height / 2.5)
+        }
+        
+        windows.addSubview(messageMenuHostVC.view)
+        messageMenuHostVC.view.topAnchor.constraint(equalTo: focusedView.bottomAnchor, constant: menuPadding).isActive = true
+        
+        messageMenuHostVC.view.leadingAnchor.constraint(equalTo: focusedView.leadingAnchor, constant: 20).isActive = message.direction == .received
+        messageMenuHostVC.view.trailingAnchor.constraint(equalTo: focusedView.trailingAnchor, constant: -20).isActive = message.direction == .sent
+        
+        self.messageMenuHostVC = messageMenuHostVC
+        self.reactionHostVC = reactionHostVC
+    }
+    
+    @objc private func dismissContextMenu() {
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .curveEaseOut) { [weak self] in
+            guard let self = self, let keyWindow = UIWindowScene.current?.keyWindow else { return }
+            focusedView?.transform = .identity
+            focusedView?.frame = startingFrame ?? .zero
+            reactionHostVC?.view.removeFromSuperview()
+            messageMenuHostVC?.view.removeFromSuperview()
+            blurView?.alpha = 0
+        } completion: { [weak self] _ in
+            self?.highlightedCell?.alpha = 1
+            self?.blurView?.removeFromSuperview()
+            self?.focusedView?.removeFromSuperview()
+            
+            self?.highlightedCell = nil
+            self?.blurView = nil
+            self?.focusedView = nil
+            self?.reactionHostVC = nil
+            self?.messageMenuHostVC = nil
+        }
+    }
+    
+    private func shrinkCell(_ cellHeight: CGFloat) -> Bool {
+        let screenHeight = (UIWindowScene.current?.screenHeight ?? 0) / 1.2
+        let spacingForMenuView = screenHeight - cellHeight
+        return spacingForMenuView < 190
+    }
+}
+
 private extension UICollectionView {
     func scrollToLastItem(at scrollPosition: UICollectionView.ScrollPosition, animated: Bool) {
         guard numberOfItems(inSection: numberOfSections - 1) > 0 else { return }
@@ -211,10 +361,21 @@ private extension UICollectionView {
     }
 }
 
+extension CALayer {
+    func applyShadow(color: UIColor, alpha: Float, x: CGFloat, y: CGFloat, blur: CGFloat) {
+        shadowColor = color.cgColor
+        shadowOpacity = alpha
+        shadowOffset = .init(width: x, height: y)
+        shadowRadius = blur
+        masksToBounds = false
+    }
+}
+
 // MARK: - Preview
 
 #Preview {
     MessageListView(ChatRoomViewModel(.placeholder))
         .ignoresSafeArea()
+        .environmentObject(VoiceMessagePlayer())
 }
 

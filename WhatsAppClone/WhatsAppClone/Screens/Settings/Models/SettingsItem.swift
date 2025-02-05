@@ -9,9 +9,11 @@ import SwiftUI
 
 struct SettingsItem {
     let imageName: String
+    let imageColor: Color = .primary
     var imageType: ImageType = .systemImage
     let backgroundColor: Color
     let title: String
+    var isArrow: Bool = true
     
     enum ImageType {
         case systemImage, assetImage
@@ -22,69 +24,74 @@ struct SettingsItem {
 extension SettingsItem {
     static let avatar = SettingsItem(
         imageName: "photo",
-        backgroundColor: .blue,
+        backgroundColor: .clear,
         title: "Change Profile Photo"
     )
     
     static let broadcastLists = SettingsItem(
-        imageName: "megaphone.fill",
-        backgroundColor: .green,
+        imageName: "megaphone",
+        backgroundColor: .clear,
         title: "Broadcast Lists"
     )
     
     static let starredMessages = SettingsItem(
-        imageName: "star.fill",
-        backgroundColor: .yellow,
+        imageName: "star",
+        backgroundColor: .clear,
         title: "Starred Messages"
     )
     
     static let linkedDevices = SettingsItem(
         imageName: "laptopcomputer",
-        backgroundColor: .green,
+        backgroundColor: .clear,
         title: "Linked Devices"
     )
     
     static let account = SettingsItem(
-        imageName: "key.fill",
-        backgroundColor: .blue,
+        imageName: "key",
+        backgroundColor: .clear,
         title: "Account"
     )
     
     static let privacy = SettingsItem(
-        imageName: "lock.fill",
-        backgroundColor: .cyan,
+        imageName: "lock",
+        backgroundColor: .clear,
         title: "Privacy"
     )
     
     static let chats = SettingsItem(
-        imageName: "whatsapp-black",
-        imageType: .assetImage,
-        backgroundColor: .green,
+        imageName: "message",
+        backgroundColor: .clear,
         title: "Chats"
     )
     
     static let notifications = SettingsItem(
-        imageName: "bell.badge.fill",
-        backgroundColor: .red,
+        imageName: "bell.badge",
+        backgroundColor: .clear,
         title: "Notifications"
     )
     
     static let storage = SettingsItem(
         imageName: "arrow.up.arrow.down",
-        backgroundColor: .green,
+        backgroundColor: .clear,
         title: "Storage and Data"
     )
     
     static let help = SettingsItem(
         imageName: "info",
-        backgroundColor: .blue,
+        backgroundColor: .clear,
         title: "Help"
     )
     
     static let tellFriend = SettingsItem(
-        imageName: "heart.fill",
-        backgroundColor: .red,
+        imageName: "heart",
+        backgroundColor: .clear,
         title: "Tell a Friend"
+    )
+    
+    static let logout = SettingsItem(
+        imageName: "door.right.hand.open",
+        backgroundColor: .clear,
+        title: "Log Out"
     )
 }
 

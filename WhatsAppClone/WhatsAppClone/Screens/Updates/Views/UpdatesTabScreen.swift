@@ -149,7 +149,7 @@ private struct RecentUpdatesItemView: View {
                 .frame(width: UpdatesTabScreen.Constant.imageDimen, height: UpdatesTabScreen.Constant.imageDimen)
             
             VStack(alignment: .leading) {
-                Text("Muharram Efe")
+                Text("Muharrem Efe Çayırbahçe")
                     .font(.callout)
                     .bold()
                 

@@ -22,6 +22,11 @@ struct SettingsItemView: View {
                 .font(.system(size: 18))
             
             Spacer()
+            
+            if item.isArrow {
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+            }
         }
     }
     
@@ -30,8 +35,9 @@ struct SettingsItemView: View {
         switch item.imageType {
         case .systemImage:
             Image(systemName: item.imageName)
-                .bold()
+                //.bold()
                 .font(.callout)
+                .foregroundColor(item.imageColor)
         case .assetImage:
             Image(item.imageName)
                 .renderingMode(.template)

@@ -77,6 +77,10 @@ struct MessageItem: Identifiable {
     
     }
     
+    var menuAnchor: UnitPoint {
+        return direction == .received ? .leading : .trailing
+    }
+    
     func containsSameOwner(as message: MessageItem) -> Bool {
         if let userA = message.sender, let userB = sender {
             return userA == userB

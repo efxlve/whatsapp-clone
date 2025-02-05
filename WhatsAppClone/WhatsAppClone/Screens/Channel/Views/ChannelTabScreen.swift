@@ -82,7 +82,7 @@ extension ChannelTabScreen {
     @ToolbarContentBuilder
     private func trailingNavItem() -> some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            //aiButton()
+            aiButton()
             cameraButton()
             newChatButton()
         }
@@ -100,7 +100,10 @@ extension ChannelTabScreen {
         Button {
             viewModel.showChatPartnerPickerView = true
         } label: {
-            Image(.plus)
+            //Image(.plus)
+            Image(systemName: "plus.circle.fill")
+                .foregroundStyle(.green)
+                .imageScale(.large)
         }
     }
     

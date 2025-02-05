@@ -123,7 +123,7 @@ private struct RecentCallItemView: View {
     
     private func recentCallsTextView() -> some View {
         VStack(alignment: .leading) {
-            Text("Muharrem Efe")
+            Text("Muharrem Efe Çayırbahçe")
             
             HStack(spacing: 5) {
                 Image(systemName: "phone.arrow.up.right.fill")

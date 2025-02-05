@@ -13,27 +13,27 @@ struct MainTabView: View {
     
     init(_ currentUser: UserItem) {
         self.currentUser = currentUser
-        makeTabBarOpaque()
+        //makeTabBarOpaque()
         let thumbImage = UIImage(systemName: "circle.fill")
         UISlider.appearance().setThumbImage(thumbImage, for: .normal)
     }
     var body: some View {
         TabView {
-//            UpdatesTabScreen()
-//                .tabItem {
-//                    Image(systemName: Tab.updates.icon)
-//                    Text(Tab.updates.title)
-//                }
+            UpdatesTabScreen()
+                .tabItem {
+                    Image(systemName: Tab.updates.icon)
+                    Text(Tab.updates.title)
+                }
             CallsTabScreen()
                 .tabItem {
                     Image(systemName: Tab.calls.icon)
                     Text(Tab.calls.title)
                 }
-//            CommunityTabScreen()
-//                .tabItem {
-//                    Image(systemName: Tab.communities.icon)
-//                    Text(Tab.communities.title)
-//                }
+            CommunityTabScreen()
+                .tabItem {
+                    Image(systemName: Tab.communities.icon)
+                    Text(Tab.communities.title)
+                }
             ChannelTabScreen(currentUser)
                 .tabItem {
                     Image(systemName: Tab.chats.icon)

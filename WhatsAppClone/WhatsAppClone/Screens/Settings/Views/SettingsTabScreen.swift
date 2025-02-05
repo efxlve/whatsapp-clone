@@ -11,11 +11,13 @@ import PhotosUI
 struct SettingsTabScreen: View {
     @State private var searchText = ""
     @State private var isSignOutAlertPresented = false
-    @StateObject private var viewModel = SettingsTabViewModel()
+    @StateObject private var viewModel: SettingsTabViewModel
+    
     private let currentUser: UserItem
     
     init(_ currentUser: UserItem) {
         self.currentUser = currentUser
+        self._viewModel = StateObject(wrappedValue: SettingsTabViewModel(currentUser))
     }
     
     var body: some View {
@@ -41,36 +43,53 @@ struct SettingsTabScreen: View {
                     SettingsItemView(item: .help)
                     SettingsItemView(item: .tellFriend)
                 }
+
+                Section {
+                    Button {
+                        isSignOutAlertPresented = true
+                    } label: {
+                        SettingsItemView(item: .logout)
+                    }
+                }
             }
             .navigationTitle("Settings")
             .searchable(text: $searchText)
             .toolbar {
-                LeadingNavItem()
+                TrailingNavItem()
             }
-        }
-    }
-}
-
-extension SettingsTabScreen {
-  @ToolbarContentBuilder
-    private func LeadingNavItem() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                isSignOutAlertPresented = true
-            } label: {
-//                Image(systemName: "person.crop.circle.fill.badge.minus")
-                Text("Sign Out")
+            .alert(isPresent: $viewModel.showProgressHUD, view: viewModel.progressHUDView)
+            .alert(isPresent: $viewModel.showSuccessHUD, view: viewModel.successHUDView)
+            .alert("Update Your Profile", isPresented: $viewModel.showUserInfoEditor) {
+                TextField("Username", text: $viewModel.name)
+                TextField("Bio", text: $viewModel.bio)
+                Button("Update") {
+                    viewModel.updateUsernameBio()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Enter your new username and bio")
             }
-            .bold()
-            .foregroundStyle(.red)
             .alert("Are you sure you want to sign out?", isPresented: $isSignOutAlertPresented) {
-                Button("Cancel", role: .cancel) {}
+                Button("Cancel", role: .cancel) { }
                 Button("Sign Out", role: .destructive) {
                     Task {
                         try? await AuthManager.shared.signOut()
                     }
                 }
             }
+        }
+    }
+}
+
+extension SettingsTabScreen {
+    @ToolbarContentBuilder
+    private func TrailingNavItem() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Save") {
+                viewModel.uploadProfilePhoto()
+            }
+            .bold()
+            .disabled(viewModel.disableSaveButton)
         }
     }
 }
@@ -91,6 +110,9 @@ private struct SettingsHeaderView: View {
                 profileImageView()
                 
                 userInfoTextView()
+                    .onTapGesture {
+                        viewModel.showUserInfoEditor = true
+                    }
             }
             
             PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .not(.videos)) {
@@ -108,7 +130,7 @@ private struct SettingsHeaderView: View {
                 .frame(width: 55, height: 55)
                 .clipShape(Circle())
         } else {
-            CircularProfileImageView(nil, size: .custom(55))
+            CircularProfileImageView(currentUser.profileImageURL, size: .custom(55))
         }
     }
     
@@ -123,7 +145,7 @@ private struct SettingsHeaderView: View {
                 Image(.qrcode)
                     .renderingMode(.template)
                     .padding(5)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(.primary)
                     .background(Color(.systemGray5))
                     .clipShape(Circle())
             }
