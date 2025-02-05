@@ -24,9 +24,10 @@ struct BubbleImageView: View {
 
             messageImageView()
                 .shadow(color: Color(.systemGray3).opacity(0.1), radius: 5, x: 0, y: 20)
-                .overlay {
-                    playButton()
-                        .opacity(item.type == .video ? 1 : 0)
+                .overlay(alignment: item.reactionAnchor) {
+                    MessageReactionView(message: item)
+                        .padding(12)
+                        .padding(.bottom, -20)
                 }
             
             if item.direction == .received {
@@ -67,6 +68,10 @@ struct BubbleImageView: View {
                 .padding(5)
                 .overlay(alignment: .bottomTrailing) {
                     timeStampTextView()
+                }
+                .overlay {
+                    playButton()
+                        .opacity(item.type == .video ? 1 : 0)
                 }
             
             if !item.text.isEmptyOrWhitespace {
