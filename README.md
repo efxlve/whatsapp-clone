@@ -52,12 +52,17 @@ NOTE: This project is a work in progress and is not yet complete.
 <details>
   <summary>Chats Page</summary>
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/93d6da3c-6ac9-4204-85ff-d406f0ffbfb3">
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/63c67ff2-6291-436d-91f8-14316dc245fd">
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/4b60b7c8-f2df-42ce-a8eb-0fbb0dc103f6">
 </details>
 
 <details>
   <summary>Settings Page</summary>
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/e9c32b5c-9dbe-458b-b5f9-b93670ef2e08">
 </details>
+
+
+
 
 ## ⬇️ Download & Installation
 
