@@ -30,6 +30,31 @@ A feature-rich chat application that brings WhatsApp-like functionalities to iOS
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/ee4abd42-3395-412a-bbe0-d86bc6f8a3e6">
 </details>
 
+<details>
+  <summary>Updates Page</summary>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/460399b0-931e-4560-982b-574806993624">
+</details>
+
+<details>
+  <summary>Calls Page</summary>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/b32e311a-5f94-4aa9-a339-afe153c71953">
+</details>
+
+<details>
+  <summary>Communities Page</summary>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/51d5038a-62e6-49d4-b5f9-0f4d3b209603">
+</details>
+
+<details>
+  <summary>Chats Page</summary>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/93d6da3c-6ac9-4204-85ff-d406f0ffbfb3>
+</details>
+
+<details>
+  <summary>Settings Page</summary>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/e9c32b5c-9dbe-458b-b5f9-b93670ef2e08">
+</details>
+
 ## ⬇️ Download & Installation
 
 ### 1️⃣ Clone the Repository:
