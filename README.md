@@ -52,6 +52,7 @@ NOTE: This project is a work in progress and is not yet complete.
 <details>
   <summary>Chats Page</summary>
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/93d6da3c-6ac9-4204-85ff-d406f0ffbfb3">
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/677817db-4410-4e3b-b0ee-cf53ca4b3721">
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/63c67ff2-6291-436d-91f8-14316dc245fd">
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/4b60b7c8-f2df-42ce-a8eb-0fbb0dc103f6">
   <img width="250" alt="image" src="https://github.com/user-attachments/assets/01c59eba-cd40-451b-96a2-9620e1983fe6">
