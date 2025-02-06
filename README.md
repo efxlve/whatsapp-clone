@@ -47,7 +47,7 @@ A feature-rich chat application that brings WhatsApp-like functionalities to iOS
 
 <details>
   <summary>Chats Page</summary>
-  <img width="250" alt="image" src="https://github.com/user-attachments/assets/93d6da3c-6ac9-4204-85ff-d406f0ffbfb3>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/93d6da3c-6ac9-4204-85ff-d406f0ffbfb3">
 </details>
 
 <details>
