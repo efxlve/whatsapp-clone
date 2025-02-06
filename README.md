@@ -4,6 +4,8 @@ A feature-rich chat application that brings WhatsApp-like functionalities to iOS
 
 NOTE: This project is a work in progress and is not yet complete.
 
+![Image](https://github.com/user-attachments/assets/98829d8b-de8e-486d-a19d-845611bafd16)
+
 ## 🌟 Features
 
 * ✅ User Authentication – Secure sign-up & login 🔐
@@ -18,7 +20,7 @@ NOTE: This project is a work in progress and is not yet complete.
 
 * iOS 18.0 or later 📱
 * Xcode 15.0 or later 🛠️
-* Swift 5.9 or later 🚀
+* Swift 5.0 or later 🚀
 
 ## 📸 Screenshots
 
