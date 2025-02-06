@@ -23,6 +23,7 @@ struct CircularProfileImageView: View {
         if let profileImageUrl {
             KFImage(URL(string: profileImageUrl))
                 .placeholder { ProgressView() }
+                .resizable()
                 .scaledToFill()
                 .frame(width: size.dimension, height: size.dimension)
                 .clipShape(Circle())
