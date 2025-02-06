@@ -2,6 +2,8 @@
 
 A feature-rich chat application that brings WhatsApp-like functionalities to iOS! 🟢✨ Built using Swift and SwiftUI.
 
+NOTE: This project is a work in progress and is not yet complete.
+
 ## 🌟 Features
 
 * ✅ User Authentication – Secure sign-up & login 🔐
